@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { AccountCategory } from '@/core/account.ts';
 
-import { Account } from '@/models/account.ts';
+import { type AccountInfoResponse, Account } from '@/models/account.ts';
+import { getAvailableFundsItems } from '@/lib/account.ts';
 
 function createAccount(id: string, category: number, displayOrder: number, parentId: string = '0'): Account {
     return Account.of({
@@ -126,5 +127,52 @@ describe('Account.compareTo', () => {
         expect(secondChild.compareTo(firstChild, { [AccountCategory.Cash.type]: 1 }, { '1': firstParent })).toBeGreaterThan(0);
         expect(firstChild.compareTo(secondChild, { [AccountCategory.Cash.type]: 1 }, { '2': secondParent })).toBeLessThan(0);
         expect(secondChild.compareTo(firstChild, { [AccountCategory.Cash.type]: 1 }, { '2': secondParent })).toBeGreaterThan(0);
+    });
+});
+
+describe('getAvailableFundsItems', () => {
+    function createFinancialAccount(id: string, category: number, balance: string, extra: Partial<AccountInfoResponse> = {}): Account {
+        return Account.of({
+            id: id,
+            name: id,
+            parentId: '0',
+            category: category,
+            type: 1,
+            icon: '1',
+            iconType: 0,
+            color: '000000',
+            currency: 'KRW',
+            balance: balance,
+            comment: '',
+            displayOrder: 1,
+            hidden: false,
+            ...extra
+        });
+    }
+
+    it('should include asset balances and remaining limits of included credit lines', () => {
+        const accounts = [
+            createFinancialAccount('deposit', AccountCategory.CheckingAccount.type, '858093', { isAsset: true }),
+            createFinancialAccount('local-currency', AccountCategory.VirtualAccount.type, '67311', { isAsset: true }),
+            createFinancialAccount('credit-line', AccountCategory.DebtAccount.type, '-21857957', { isLiability: true, creditCardLimit: '42750000', includeInAvailableFunds: true }),
+            createFinancialAccount('family-loan', AccountCategory.DebtAccount.type, '-42000000', { isLiability: true, includeInAvailableFunds: false }),
+            createFinancialAccount('excluded-saving', AccountCategory.SavingsAccount.type, '1000', { isAsset: true, includeInAvailableFunds: false })
+        ];
+
+        const items = getAvailableFundsItems(accounts);
+
+        expect(items.map(item => [item.accountId, item.amount.toString()])).toEqual([
+            ['deposit', '858093'],
+            ['local-currency', '67311'],
+            ['credit-line', '20892043']
+        ]);
+    });
+
+    it('should not include a liability without a limit even when flagged', () => {
+        const accounts = [
+            createFinancialAccount('loan', AccountCategory.DebtAccount.type, '-1000', { isLiability: true, includeInAvailableFunds: true })
+        ];
+
+        expect(getAvailableFundsItems(accounts)).toEqual([]);
     });
 });

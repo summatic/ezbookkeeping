@@ -19,6 +19,8 @@ export class Account implements AccountInfoResponse {
     public lastReconciledTime?: number;
     public comment: string;
     public creditCardStatementDate?: number;
+    public interestRate?: number;
+    public maturityDate?: string;
     public displayOrder: number;
     public visible: boolean;
     public subAccounts?: Account[];
@@ -27,6 +29,7 @@ export class Account implements AccountInfoResponse {
     private _numericBalance?: number;
     private _initialCreditCardLimit?: string;
     private _numericCreditCardLimit?: number;
+    private _includeInAvailableFunds?: boolean;
 
     private readonly _isAsset?: boolean;
     private readonly _isLiability?: boolean;
@@ -127,6 +130,29 @@ export class Account implements AccountInfoResponse {
         }
     }
 
+    public get canSetLimit(): boolean {
+        return this.category === AccountCategory.CreditCard.type || (this.category === AccountCategory.DebtAccount.type && this.type === AccountType.SingleAccount.type);
+    }
+
+    public get includeInAvailableFunds(): boolean {
+        if (typeof(this._includeInAvailableFunds) !== 'undefined') {
+            return this._includeInAvailableFunds;
+        }
+
+        return this.isAsset;
+    }
+
+    public set includeInAvailableFunds(value: boolean) {
+        this._includeInAvailableFunds = value;
+    }
+
+    public copyFinancialSettingsFrom(other: Account): Account {
+        this.interestRate = other.interestRate;
+        this.maturityDate = other.maturityDate;
+        this._includeInAvailableFunds = other._includeInAvailableFunds;
+        return this;
+    }
+
     public get isAsset(): boolean {
         if (typeof(this._isAsset) !== 'undefined') {
             return this._isAsset;
@@ -178,7 +204,10 @@ export class Account implements AccountInfoResponse {
             this.visible === other.visible &&
             this.creditCardStatementDate === other.creditCardStatementDate &&
             this.creditCardLimit === other.creditCardLimit &&
-            this.numericCreditCardLimit === other.numericCreditCardLimit;
+            this.numericCreditCardLimit === other.numericCreditCardLimit &&
+            this.interestRate === other.interestRate &&
+            this.maturityDate === other.maturityDate &&
+            this.includeInAvailableFunds === other.includeInAvailableFunds;
 
         if (!isEqual) {
             return false;
@@ -272,6 +301,7 @@ export class Account implements AccountInfoResponse {
         this._numericBalance = other._numericBalance;
         this._initialCreditCardLimit = other._initialCreditCardLimit;
         this._numericCreditCardLimit = other._numericCreditCardLimit;
+        this.copyFinancialSettingsFrom(other);
     }
 
     public setSuitableIcon(oldCategory: number, newCategory: number): void {
@@ -324,7 +354,10 @@ export class Account implements AccountInfoResponse {
             balanceTime: (parentAccount || this.type === AccountType.SingleAccount.type) && this.balanceTime ? this.balanceTime : 0,
             comment: this.comment,
             creditCardStatementDate: !parentAccount && this.category === AccountCategory.CreditCard.type ? this.creditCardStatementDate : undefined,
-            creditCardLimit: !parentAccount && this.category === AccountCategory.CreditCard.type && this.numericCreditCardLimit > 0 ? this.creditCardLimit : undefined,
+            creditCardLimit: !parentAccount && this.canSetLimit && this.numericCreditCardLimit > 0 ? this.creditCardLimit : undefined,
+            interestRate: !parentAccount && this.interestRate && this.interestRate > 0 ? this.interestRate : undefined,
+            maturityDate: !parentAccount && this.maturityDate ? this.maturityDate : undefined,
+            includeInAvailableFunds: !parentAccount ? this.includeInAvailableFunds : undefined,
             subAccounts: !parentAccount ? subAccountCreateRequests : undefined,
             clientSessionId: !parentAccount ? clientSessionId : undefined
         };
@@ -360,7 +393,10 @@ export class Account implements AccountInfoResponse {
             lastReconciledTime: this.lastReconciledTime,
             comment: this.comment,
             creditCardStatementDate: !parentAccount && this.category === AccountCategory.CreditCard.type ? this.creditCardStatementDate : undefined,
-            creditCardLimit: !parentAccount && this.category === AccountCategory.CreditCard.type && this.numericCreditCardLimit > 0 ? this.creditCardLimit : undefined,
+            creditCardLimit: !parentAccount && this.canSetLimit && this.numericCreditCardLimit > 0 ? this.creditCardLimit : undefined,
+            interestRate: !parentAccount && this.interestRate && this.interestRate > 0 ? this.interestRate : undefined,
+            maturityDate: !parentAccount && this.maturityDate ? this.maturityDate : undefined,
+            includeInAvailableFunds: !parentAccount ? this.includeInAvailableFunds : undefined,
             hidden: !this.visible,
             subAccounts: !parentAccount ? subAccountModifyRequests : undefined,
             clientSessionId: !parentAccount ? clientSessionId : undefined
@@ -516,7 +552,7 @@ export class Account implements AccountInfoResponse {
             this.creditCardLimit,
             this.isAsset,
             this.isLiability
-        );
+        ).copyFinancialSettingsFrom(this);
     }
 
     public clone(): Account {
@@ -540,7 +576,7 @@ export class Account implements AccountInfoResponse {
             this.creditCardLimit,
             this.isAsset,
             this.isLiability,
-            typeof(this.subAccounts) !== 'undefined' ? Account.cloneAccounts(this.subAccounts) : undefined);
+            typeof(this.subAccounts) !== 'undefined' ? Account.cloneAccounts(this.subAccounts) : undefined).copyFinancialSettingsFrom(this);
     }
 
     public createNewSubAccount(currency: string, balanceTime: number): Account {
@@ -588,7 +624,7 @@ export class Account implements AccountInfoResponse {
     }
 
     public static of(accountResponse: AccountInfoResponse): Account {
-        return new Account(
+        const account = new Account(
             accountResponse.id,
             accountResponse.name,
             accountResponse.parentId,
@@ -610,6 +646,15 @@ export class Account implements AccountInfoResponse {
             accountResponse.isLiability,
             accountResponse.subAccounts ? Account.ofMulti(accountResponse.subAccounts) : undefined
         );
+
+        account.interestRate = accountResponse.interestRate;
+        account.maturityDate = accountResponse.maturityDate;
+
+        if (typeof(accountResponse.includeInAvailableFunds) === 'boolean') {
+            account.includeInAvailableFunds = accountResponse.includeInAvailableFunds;
+        }
+
+        return account;
     }
 
     public static ofMulti(accountResponses: AccountInfoResponse[]): Account[] {
@@ -692,6 +737,7 @@ export class AccountWithDisplayBalance extends Account {
             account.subAccounts
         );
 
+        this.copyFinancialSettingsFrom(account);
         this.displayBalance = displayBalance;
     }
 
@@ -713,6 +759,9 @@ export interface AccountCreateRequest {
     readonly comment: string;
     readonly creditCardStatementDate?: number;
     readonly creditCardLimit?: string;
+    readonly interestRate?: number;
+    readonly maturityDate?: string;
+    readonly includeInAvailableFunds?: boolean;
     readonly subAccounts?: AccountCreateRequest[];
     readonly clientSessionId?: string;
 }
@@ -731,6 +780,9 @@ export interface AccountModifyRequest {
     readonly comment: string;
     readonly creditCardStatementDate?: number;
     readonly creditCardLimit?: string;
+    readonly interestRate?: number;
+    readonly maturityDate?: string;
+    readonly includeInAvailableFunds?: boolean;
     readonly hidden: boolean;
     readonly subAccounts?: AccountModifyRequest[];
     readonly clientSessionId?: string;
@@ -756,6 +808,9 @@ export interface AccountInfoResponse {
     readonly comment: string;
     readonly creditCardStatementDate?: number;
     readonly creditCardLimit?: string;
+    readonly interestRate?: number;
+    readonly maturityDate?: string;
+    readonly includeInAvailableFunds?: boolean;
     readonly displayOrder: number;
     readonly isAsset?: boolean;
     readonly isLiability?: boolean;

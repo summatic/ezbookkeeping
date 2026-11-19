@@ -1,6 +1,9 @@
 <template>
+    <runway-widget :loading="loading" :title="widgetTitle"
+                   v-if="widget.type === OverviewWidgetType.Runway" />
+
     <asset-summary-widget :loading="loading" :title="widgetTitle"
-                          v-if="widget.type === OverviewWidgetType.AssetSummary" />
+                          v-else-if="widget.type === OverviewWidgetType.AssetSummary" />
 
     <account-balance-list-widget :loading="loading" :editing="editing" :title="widgetTitle"
                                  :account-ids="widget.settings['accountIds'] as string[]"
@@ -85,6 +88,7 @@ import { computed } from 'vue';
 import MonthlyExpenseOverviewWidget from './widgets/MonthlyExpenseOverviewWidget.vue';
 import MonthlyExpenseProgressWidget from './widgets/MonthlyExpenseProgressWidget.vue';
 import AssetSummaryWidget from './widgets/AssetSummaryWidget.vue';
+import RunwayWidget from './widgets/RunwayWidget.vue';
 import PeriodIncomeExpenseWidget from './widgets/PeriodIncomeExpenseWidget.vue';
 import PeriodNetIncomeAndSavingsRateWidget from './widgets/PeriodNetIncomeAndSavingsRateWidget.vue';
 import IncomeExpenseTrendWidget from './widgets/IncomeExpenseTrendWidget.vue';

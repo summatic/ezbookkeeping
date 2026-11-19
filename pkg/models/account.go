@@ -60,6 +60,11 @@ func (c AccountCategory) IsLiability() bool {
 	return liabilityAccountCategory[c]
 }
 
+// CanSetLimit returns whether the account category supports a limit (credit card limit or credit line limit)
+func (c AccountCategory) CanSetLimit() bool {
+	return c == ACCOUNT_CATEGORY_CREDIT_CARD || c == ACCOUNT_CATEGORY_DEBT
+}
+
 // AccountType represents account type
 type AccountType byte
 
@@ -97,9 +102,12 @@ type Account struct {
 
 // AccountExtend represents account extend data stored in database
 type AccountExtend struct {
-	LastReconciledTime      *int64 `json:"lastReconciledTime,omitempty"`
-	CreditCardStatementDate *int   `json:"creditCardStatementDate,omitempty"`
-	CreditCardLimit         *int64 `json:"creditCardLimit,string,omitempty"`
+	LastReconciledTime      *int64  `json:"lastReconciledTime,omitempty"`
+	CreditCardStatementDate *int    `json:"creditCardStatementDate,omitempty"`
+	CreditCardLimit         *int64  `json:"creditCardLimit,string,omitempty"`
+	InterestRate            *int64  `json:"interestRate,omitempty"`
+	MaturityDate            *string `json:"maturityDate,omitempty"`
+	IncludeInAvailableFunds *bool   `json:"includeInAvailableFunds,omitempty"`
 }
 
 // AccountCreateRequest represents all parameters of account creation request
@@ -116,6 +124,9 @@ type AccountCreateRequest struct {
 	Comment                 string                  `json:"comment" binding:"max=255"`
 	CreditCardStatementDate int                     `json:"creditCardStatementDate" binding:"min=0,max=28"`
 	CreditCardLimit         string                  `json:"creditCardLimit" binding:"omitempty,validTransactionAmount"`
+	InterestRate            *int64                  `json:"interestRate" binding:"omitempty,min=0,max=100000"`
+	MaturityDate            string                  `json:"maturityDate" binding:"omitempty,len=10"`
+	IncludeInAvailableFunds *bool                   `json:"includeInAvailableFunds"`
 	SubAccounts             []*AccountCreateRequest `json:"subAccounts" binding:"omitempty"`
 	ClientSessionId         string                  `json:"clientSessionId"`
 }
@@ -135,6 +146,9 @@ type AccountModifyRequest struct {
 	Comment                 string                  `json:"comment" binding:"max=255"`
 	CreditCardStatementDate int                     `json:"creditCardStatementDate" binding:"min=0,max=28"`
 	CreditCardLimit         string                  `json:"creditCardLimit" binding:"omitempty,validTransactionAmount"`
+	InterestRate            *int64                  `json:"interestRate" binding:"omitempty,min=0,max=100000"`
+	MaturityDate            string                  `json:"maturityDate" binding:"omitempty,len=10"`
+	IncludeInAvailableFunds *bool                   `json:"includeInAvailableFunds"`
 	Hidden                  bool                    `json:"hidden"`
 	SubAccounts             []*AccountModifyRequest `json:"subAccounts" binding:"omitempty"`
 	ClientSessionId         string                  `json:"clientSessionId"`
@@ -194,6 +208,9 @@ type AccountInfoResponse struct {
 	Comment                 string                   `json:"comment"`
 	CreditCardStatementDate *int                     `json:"creditCardStatementDate,omitempty"`
 	CreditCardLimit         *string                  `json:"creditCardLimit,omitempty"`
+	InterestRate            *int64                   `json:"interestRate,omitempty"`
+	MaturityDate            *string                  `json:"maturityDate,omitempty"`
+	IncludeInAvailableFunds bool                     `json:"includeInAvailableFunds"`
 	DisplayOrder            int32                    `json:"displayOrder"`
 	IsAsset                 bool                     `json:"isAsset,omitempty"`
 	IsLiability             bool                     `json:"isLiability,omitempty"`
@@ -210,14 +227,28 @@ func (a *Account) GetLastReconciledTime() int64 {
 	return 0
 }
 
+// IsIncludedInAvailableFunds returns whether the account is counted in available funds
+// (asset accounts are included by default, liability accounts are excluded by default)
+func (a *Account) IsIncludedInAvailableFunds() bool {
+	if a.Extend != nil && a.Extend.IncludeInAvailableFunds != nil {
+		return *a.Extend.IncludeInAvailableFunds
+	}
+
+	return assetAccountCategory[a.Category]
+}
+
 // ToAccountInfoResponse returns a view-object according to database model
 func (a *Account) ToAccountInfoResponse() *AccountInfoResponse {
 	var lastReconciledTime *int64
 	var creditCardStatementDate *int
 	var creditCardLimit *string
+	var interestRate *int64
+	var maturityDate *string
 
 	if a.Extend != nil {
 		lastReconciledTime = a.Extend.LastReconciledTime
+		interestRate = a.Extend.InterestRate
+		maturityDate = a.Extend.MaturityDate
 	}
 
 	if a.ParentAccountId == LevelOneAccountParentId && a.Category == ACCOUNT_CATEGORY_CREDIT_CARD {
@@ -226,7 +257,9 @@ func (a *Account) ToAccountInfoResponse() *AccountInfoResponse {
 		} else {
 			creditCardStatementDate = &defaultCreditCardAccountStatementDate
 		}
+	}
 
+	if a.ParentAccountId == LevelOneAccountParentId && a.Category.CanSetLimit() {
 		if a.Extend != nil && a.Extend.CreditCardLimit != nil {
 			textualLimit := utils.Int64ToString(*a.Extend.CreditCardLimit)
 			creditCardLimit = &textualLimit
@@ -250,6 +283,9 @@ func (a *Account) ToAccountInfoResponse() *AccountInfoResponse {
 		LastReconciledTime:      lastReconciledTime,
 		CreditCardStatementDate: creditCardStatementDate,
 		CreditCardLimit:         creditCardLimit,
+		InterestRate:            interestRate,
+		MaturityDate:            maturityDate,
+		IncludeInAvailableFunds: a.IsIncludedInAvailableFunds(),
 		DisplayOrder:            a.DisplayOrder,
 		IsAsset:                 assetAccountCategory[a.Category],
 		IsLiability:             liabilityAccountCategory[a.Category],

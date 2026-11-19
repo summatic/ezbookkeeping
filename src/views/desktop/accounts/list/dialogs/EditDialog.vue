@@ -141,6 +141,37 @@
                                         v-model="account.creditCardStatementDate"
                                     ></v-autocomplete>
                                 </v-col>
+                                <v-col cols="12" md="6" v-if="currentAccountIndex < 0 && account.category === AccountCategory.DebtAccount.type && account.type === AccountType.SingleAccount.type">
+                                    <amount-input :disabled="loading || submitting"
+                                                  :persistent-placeholder="true"
+                                                  :currency="account.currency"
+                                                  :show-currency="true"
+                                                  :label="tt('Limit')"
+                                                  :placeholder="tt('Limit')"
+                                                  v-model="account.numericCreditCardLimit" />
+                                </v-col>
+                                <v-col cols="12" md="6" v-if="currentAccountIndex < 0 && canSetFinancialTerms">
+                                    <v-text-field type="number"
+                                                  persistent-placeholder
+                                                  min="0"
+                                                  max="1000"
+                                                  step="0.01"
+                                                  suffix="%"
+                                                  :disabled="loading || submitting"
+                                                  :label="tt('Annual Interest Rate')"
+                                                  :placeholder="tt('Annual Interest Rate')"
+                                                  v-model="interestRatePercent" />
+                                </v-col>
+                                <v-col cols="12" md="6" v-if="currentAccountIndex < 0 && canSetFinancialTerms">
+                                    <v-text-field type="date"
+                                                  persistent-placeholder
+                                                  clearable
+                                                  :disabled="loading || submitting"
+                                                  :label="tt('Maturity Date')"
+                                                  :placeholder="tt('Maturity Date')"
+                                                  :model-value="account.maturityDate ?? ''"
+                                                  @update:model-value="account.maturityDate = $event || undefined" />
+                                </v-col>
                                 <v-col cols="12" :md="((canShowBalanceTime && selectedAccount.numericBalance) || canShowLastReconciledTime) ? 6 : 12"
                                        v-if="account.type === AccountType.SingleAccount.type || currentAccountIndex >= 0">
                                     <amount-input :disabled="loading || submitting || (!!editAccountId && !isNewAccount(selectedAccount))"
@@ -184,6 +215,13 @@
                                         :placeholder="currentAccountIndex < 0 ? tt('Your account description (optional)') : tt('Your sub-account description (optional)')"
                                         v-model="selectedAccount.comment"
                                     />
+                                </v-col>
+                                <v-col class="py-0 my-n2" cols="12" md="12" v-if="currentAccountIndex < 0 && canChooseAvailableFunds">
+                                    <v-switch :disabled="loading || submitting"
+                                              :label="tt('Include in Available Funds')"
+                                              :hint="account.isLiability ? tt('Remaining limit of this account is counted as available funds') : tt('Balance of this account is counted as available funds')"
+                                              persistent-hint
+                                              v-model="account.includeInAvailableFunds"/>
                                 </v-col>
                                 <v-col class="py-0 my-n2" cols="12" md="12" v-if="editAccountId && !isNewAccount(selectedAccount)">
                                     <v-switch :disabled="loading || submitting"
@@ -307,6 +345,21 @@ const accountAmountTitle = computed<string>(() => {
         return account.value.isLiability ? tt('Account Outstanding Balance') : tt('Account Balance');
     } else {
         return account.value.isLiability ? tt('Sub-account Outstanding Balance') : tt('Sub-account Balance');
+    }
+});
+
+const canSetFinancialTerms = computed<boolean>(() =>
+    account.value.category === AccountCategory.DebtAccount.type ||
+    account.value.category === AccountCategory.SavingsAccount.type ||
+    account.value.category === AccountCategory.CertificateOfDeposit.type);
+
+const canChooseAvailableFunds = computed<boolean>(() => account.value.isAsset || account.value.canSetLimit);
+
+const interestRatePercent = computed<string>({
+    get: () => account.value.interestRate ? (account.value.interestRate / 100).toString(10) : '',
+    set: (value: string) => {
+        const rate = parseFloat(value);
+        account.value.interestRate = Number.isFinite(rate) && rate > 0 ? Math.round(rate * 100) : undefined;
     }
 });
 
