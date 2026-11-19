@@ -479,6 +479,8 @@ export const useOverviewStore = defineStore('overview', () => {
 
         if (dateType === DateRange.ThisMonth.type) {
             requestDateRange = transactionDataRange.value.thisMonth;
+        } else if (dateType === DateRange.LastMonth.type) {
+            requestDateRange = transactionDataRange.value.lastMonth;
         } else if (dateType === DateRange.ThisYear.type) {
             requestDateRange = transactionDataRange.value.thisYear;
         }

@@ -96,6 +96,8 @@
                             <div class="nested-list-item-title">
                                 <span>{{ account.name }}</span>
                                 <div class="item-footer" v-if="account.comment">{{ account.comment }}</div>
+                                <div class="item-footer" :class="{ 'text-color-red': (accountLimitUsagePercent(account) ?? 0) >= 90 }"
+                                     v-if="accountFinancialSummary(account)">{{ accountFinancialSummary(account) }}</div>
                             </div>
                             <div class="nested-list-item-after" v-if="account.type === AccountType.MultiSubAccounts.type">
                                 <span>{{ accountBalanceOrAvailableCredit(account, undefined, showAvailableCreditForCreditCard, showAccountBalance) }}</span>
@@ -270,8 +272,39 @@ const {
     maxCategoryAccountCount,
     accountCategoryTotalBalance,
     accountBalance,
-    accountBalanceOrAvailableCredit
+    accountBalanceOrAvailableCredit,
+    accountAvailableCredit,
+    accountLimitUsagePercent,
+    accountInterestRateDisplay
 } = useAccountListPageBase();
+
+// e.g. "Used 98% · Available ₩319,272 · Annual Interest Rate 5.61% · Maturity Date 2027-05-14"
+function accountFinancialSummary(account: Account): string {
+    const parts: string[] = [];
+    const usage = accountLimitUsagePercent(account);
+
+    if (usage !== null) {
+        parts.push(`${tt('Used')} ${usage}%`);
+
+        const available = accountAvailableCredit(account, showAccountBalance.value);
+
+        if (available) {
+            parts.push(`${tt('pageSpecific.accountListPage.availableBalance')} ${available}`);
+        }
+    }
+
+    const rate = accountInterestRateDisplay(account);
+
+    if (rate) {
+        parts.push(`${tt('Annual Interest Rate')} ${rate}`);
+    }
+
+    if (account.maturityDate) {
+        parts.push(`${tt('Maturity Date')} ${account.maturityDate}`);
+    }
+
+    return parts.join(' · ');
+}
 
 const rootStore = useRootStore();
 const settingsStore = useSettingsStore();

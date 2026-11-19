@@ -27,6 +27,12 @@
                     <span>{{ totalLiabilities }}</span>
                 </small>
             </p>
+            <p class="no-margin" v-if="!loading && scene === 'accountList'">
+                <small class="account-overview-info">
+                    <span>{{ tt('Available funds') }}</span>
+                    <span>{{ availableFunds }}</span>
+                </small>
+            </p>
         </f7-card-header>
     </f7-card>
 </template>
@@ -38,6 +44,8 @@ import { useI18n } from '@/locales/helpers.ts';
 import { useAssetSummaryWidgetBase } from '@/views/base/overview/AssetSummaryWidgetBase.ts';
 
 import { useEnvironmentsStore } from '@/stores/environment.ts';
+import { useUserStore } from '@/stores/user.ts';
+import { useAccountsStore } from '@/stores/account.ts';
 
 import type { ColorValue } from '@/core/color.ts';
 import {
@@ -55,7 +63,7 @@ const props = defineProps<{
     darkBackgroundColor?: ColorValue;
 }>();
 
-const { tt } = useI18n();
+const { tt, formatAmountToLocalizedNumeralsWithCurrency } = useI18n();
 
 const {
     showAccountBalance,
@@ -65,6 +73,10 @@ const {
 } = useAssetSummaryWidgetBase(props.scene);
 
 const environmentsStore = useEnvironmentsStore();
+const userStore = useUserStore();
+const accountsStore = useAccountsStore();
+
+const availableFunds = computed<string>(() => formatAmountToLocalizedNumeralsWithCurrency(accountsStore.getAvailableFunds(showAccountBalance.value), userStore.currentUserDefaultCurrency));
 
 const isDarkMode = computed<boolean>(() => environmentsStore.framework7DarkMode || false);
 const backgroundColor = computed<ColorValue>(() => isDarkMode.value ?

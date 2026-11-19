@@ -180,7 +180,11 @@
             "ruleCount": "{count} rules",
             "accountActivationAndResendValidationEmailTip": "계정 활성화 링크가 귀하의 이메일 주소({email})로 전송되었습니다. 메일을 받지 못하신 경우, 비밀번호를 다시 입력하고 아래 버튼을 클릭하여 확인 메일을 재전송하십시오.",
             "resendValidationEmailTip": "메일을 받지 못하신 경우, 비밀번호를 다시 입력하고 아래 버튼을 클릭하여 확인 메일을 {email}로 재전송하십시오.",
-            "oauth2bindTip": "{providerName}를 사용하여 {userName} 사용자로 로그인하고 있습니다. 확인을 위해 ezBookkeeping 비밀번호를 입력하세요."
+            "oauth2bindTip": "{providerName}를 사용하여 {userName} 사용자로 로그인하고 있습니다. 확인을 위해 ezBookkeeping 비밀번호를 입력하세요.",
+            "creditLineAlmostUsedAlert": "{name} 한도를 {percent}% 사용했습니다. 남은 한도 {remaining}",
+            "shortRunwayAlert": "최근 적자가 이어지면 쓸 수 있는 돈이 {months}개월 만에 바닥납니다",
+            "installmentShareOfDeficitAlert": "이번 달 할부 상환액이 월 평균 적자의 {percent}%입니다",
+            "installmentEndingSoonAlert": "{name} 할부가 {month}에 끝납니다"
         }
     },
     "dataExport": {
@@ -2140,6 +2144,19 @@
     "Sub-account Last Reconciled Time": "Sub-account Last Reconciled Time",
     "Statement Date": "명세서 날짜",
     "Credit Limit": "Credit Limit",
+    "Installment Repayments": "할부 상환 추이",
+    "No installment found. Add monthly scheduled expenses with an end date to see them here.": "할부가 없습니다. 종료일이 있는 월간 예약 지출을 추가하면 여기에 표시됩니다.",
+    "Remaining": "남은 금액",
+    "Ends": "종료",
+    "Fixed and Variable Expenses": "고정비와 변동비",
+    "Set Fixed Expense Categories": "고정비 카테고리 설정",
+    "Fixed Expense Categories": "고정비 카테고리",
+    "No fixed expense category is set yet.": "아직 고정비 카테고리가 없습니다.",
+    "Fixed Expenses": "고정비",
+    "Variable Expenses": "변동비",
+    "Settlement Alerts": "결산 알림",
+    "No alerts": "알림 없음",
+    "View Accounts": "계좌 보기",
     "Available funds": "쓸 수 있는 돈",
     "Limit": "한도",
     "Used": "사용",

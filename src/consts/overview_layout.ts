@@ -72,6 +72,71 @@ export const DESKTOP_OVERVIEW_WIDGET_DEFINITIONS: PartialRecord<OverviewWidgetTy
             OverviewWidgetDataRequirement.TransactionOverview
         ]
     },
+    [OverviewWidgetType.InstallmentRepayments]: {
+        type: OverviewWidgetType.InstallmentRepayments,
+        name: 'Installment Repayments',
+        supportsSettings: [
+            WIDGET_TITLE_SETTING
+        ],
+        defaultSettings: {},
+        defaultWidth: 6,
+        defaultHeight: 5,
+        minWidth: 4,
+        minHeight: 4,
+        dataRequirements: [
+            OverviewWidgetDataRequirement.Accounts,
+            OverviewWidgetDataRequirement.ScheduledTransactions
+        ]
+    },
+    [OverviewWidgetType.FixedVariableExpense]: {
+        type: OverviewWidgetType.FixedVariableExpense,
+        name: 'Fixed and Variable Expenses',
+        supportsSettings: [
+            WIDGET_TITLE_SETTING,
+            {
+                settingType: 'customSelect',
+                settingName: 'dateRange',
+                displayName: 'Date Range',
+                selectValues: [
+                    DateRange.LastMonth,
+                    DateRange.ThisMonth,
+                    DateRange.ThisYear
+                ].map(dateRange => ({
+                    name: dateRange.name,
+                    value: dateRange.type
+                }))
+            }
+        ],
+        defaultSettings: {
+            dateRange: DateRange.LastMonth.type
+        },
+        defaultWidth: 6,
+        defaultHeight: 5,
+        minWidth: 4,
+        minHeight: 4,
+        dataRequirements: [
+            OverviewWidgetDataRequirement.Accounts,
+            OverviewWidgetDataRequirement.TransactionCategories,
+            OverviewWidgetDataRequirement.TransactionCategoryStatistics
+        ]
+    },
+    [OverviewWidgetType.SettlementAlerts]: {
+        type: OverviewWidgetType.SettlementAlerts,
+        name: 'Settlement Alerts',
+        supportsSettings: [
+            WIDGET_TITLE_SETTING
+        ],
+        defaultSettings: {},
+        defaultWidth: 4,
+        defaultHeight: 5,
+        minWidth: 3,
+        minHeight: 3,
+        dataRequirements: [
+            OverviewWidgetDataRequirement.Accounts,
+            OverviewWidgetDataRequirement.TransactionOverview,
+            OverviewWidgetDataRequirement.ScheduledTransactions
+        ]
+    },
     [OverviewWidgetType.AssetSummary]: {
         type: OverviewWidgetType.AssetSummary,
         name: 'Asset Summary',
@@ -804,6 +869,52 @@ export const DEFAULT_DESKTOP_OVERVIEW_LAYOUT: DesktopOverviewLayout = {
 };
 
 export const MOBILE_OVERVIEW_WIDGET_DEFINITIONS: PartialRecord<OverviewWidgetType, MobileOverviewWidgetDefinition> = {
+    [OverviewWidgetType.Runway]: {
+        type: OverviewWidgetType.Runway,
+        name: 'Runway',
+        supportsSettings: [
+            WIDGET_TITLE_SETTING,
+            WIDGET_SHOW_TITLE_SETTING
+        ],
+        defaultSettings: {
+            showTitle: false
+        },
+        dataRequirements: [
+            OverviewWidgetDataRequirement.Accounts,
+            OverviewWidgetDataRequirement.TransactionOverview
+        ]
+    },
+    [OverviewWidgetType.InstallmentRepayments]: {
+        type: OverviewWidgetType.InstallmentRepayments,
+        name: 'Installment Repayments',
+        supportsSettings: [
+            WIDGET_TITLE_SETTING,
+            WIDGET_SHOW_TITLE_SETTING
+        ],
+        defaultSettings: {
+            showTitle: false
+        },
+        dataRequirements: [
+            OverviewWidgetDataRequirement.Accounts,
+            OverviewWidgetDataRequirement.ScheduledTransactions
+        ]
+    },
+    [OverviewWidgetType.SettlementAlerts]: {
+        type: OverviewWidgetType.SettlementAlerts,
+        name: 'Settlement Alerts',
+        supportsSettings: [
+            WIDGET_TITLE_SETTING,
+            WIDGET_SHOW_TITLE_SETTING
+        ],
+        defaultSettings: {
+            showTitle: false
+        },
+        dataRequirements: [
+            OverviewWidgetDataRequirement.Accounts,
+            OverviewWidgetDataRequirement.TransactionOverview,
+            OverviewWidgetDataRequirement.ScheduledTransactions
+        ]
+    },
     [OverviewWidgetType.AssetSummary]: {
         type: OverviewWidgetType.AssetSummary,
         name: 'Asset Summary',

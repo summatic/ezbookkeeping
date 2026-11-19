@@ -40,19 +40,10 @@ import { computed } from 'vue';
 import { useI18n } from '@/locales/helpers.ts';
 
 import { useSettingsStore } from '@/stores/setting.ts';
-import { useUserStore } from '@/stores/user.ts';
 import { useAccountsStore } from '@/stores/account.ts';
-import { useOverviewStore } from '@/stores/overview.ts';
+import { useSettlementWidgetBase } from '@/views/base/overview/SettlementWidgetBase.ts';
 
-import type { BigDecimal } from '@/core/numeral.ts';
-import {
-    type TransactionOverviewData,
-    LATEST_12MONTHS_TRANSACTION_AMOUNTS_REQUEST_TYPES
-} from '@/models/transaction.ts';
-
-import { BIG_DECIMAL_ZERO, isBigDecimal } from '@/lib/numeral.ts';
 import { getCurrentUnixTime, getUnixTimeAfterUnixTime, parseDateTimeFromUnixTime } from '@/lib/datetime.ts';
-import { type RunwayMonthlyAmount, type RunwayResult, RUNWAY_COUNTED_MONTHS, calculateRunway } from '@/lib/runway.ts';
 
 import {
     mdiTimerSandComplete
@@ -75,53 +66,11 @@ const {
 } = useI18n();
 
 const settingsStore = useSettingsStore();
-const userStore = useUserStore();
 const accountsStore = useAccountsStore();
-const overviewStore = useOverviewStore();
 
-const defaultCurrency = computed<string>(() => userStore.currentUserDefaultCurrency);
-const transactionOverview = computed<TransactionOverviewData>(() => overviewStore.transactionOverview);
-
-const availableFunds = computed<BigDecimal>(() => {
-    const funds = accountsStore.getAvailableFunds(true);
-
-    if (isBigDecimal(funds)) {
-        return funds;
-    } else if (typeof funds === 'object' && isBigDecimal(funds.value)) {
-        return funds.value;
-    }
-
-    return BIG_DECIMAL_ZERO;
-});
-
-// the last completed months, excluding the current (partial) month
-const countedMonthlyAmounts = computed<RunwayMonthlyAmount[]>(() => {
-    const ret: RunwayMonthlyAmount[] = [];
-
-    if (!transactionOverview.value || !transactionOverview.value.thisMonth || !transactionOverview.value.thisMonth.valid) {
-        return ret;
-    }
-
-    const completedMonthTypes = LATEST_12MONTHS_TRANSACTION_AMOUNTS_REQUEST_TYPES.slice(0, -1).slice(-RUNWAY_COUNTED_MONTHS);
-
-    for (const requestType of completedMonthTypes) {
-        const item = transactionOverview.value[requestType];
-
-        if (!item) {
-            continue;
-        }
-
-        ret.push({
-            incomeAmount: item.incomeAmount || BIG_DECIMAL_ZERO,
-            expenseAmount: item.expenseAmount || BIG_DECIMAL_ZERO
-        });
-    }
-
-    return ret;
-});
+const { defaultCurrency, countedMonthlyAmounts, runway } = useSettlementWidgetBase();
 
 const hasData = computed<boolean>(() => countedMonthlyAmounts.value.length > 0 || accountsStore.allAccounts.length > 0);
-const runway = computed<RunwayResult>(() => calculateRunway(availableFunds.value, countedMonthlyAmounts.value));
 
 const displayMonths = computed<string>(() => runway.value.months === null ? '' : formatNumberToLocalizedNumerals(runway.value.months, 2));
 const displayAvailableFunds = computed<string>(() => formatAmountToLocalizedNumeralsWithCurrency(accountsStore.getAvailableFunds(settingsStore.appSettings.showAccountBalance), defaultCurrency.value));

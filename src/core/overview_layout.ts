@@ -15,7 +15,10 @@ export enum OverviewWidgetType {
     TransactionCalendar = 'transaction-calendar',
     TransactionCalendarHeatmap = 'transaction-calendar-heatmap',
     AddTransactionButton = 'add-transaction-button',
-    Runway = 'runway'
+    Runway = 'runway',
+    InstallmentRepayments = 'installment-repayments',
+    FixedVariableExpense = 'fixed-variable-expense',
+    SettlementAlerts = 'settlement-alerts'
 }
 
 export enum OverviewWidgetDataRequirement {
@@ -29,7 +32,8 @@ export enum OverviewWidgetDataRequirement {
     AssetTrends = 'assetTrends',
     RecentTransactions = 'recentTransactions',
     CurrentMonthTransactions = 'currentMonthTransactions',
-    DailyTransactionAmounts = 'dailyTransactionAmounts'
+    DailyTransactionAmounts = 'dailyTransactionAmounts',
+    ScheduledTransactions = 'scheduledTransactions'
 }
 
 export type OverviewWidgetSettingValue = string | number | boolean | (string | number)[];

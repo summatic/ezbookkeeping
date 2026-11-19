@@ -2,6 +2,16 @@
     <runway-widget :loading="loading" :title="widgetTitle"
                    v-if="widget.type === OverviewWidgetType.Runway" />
 
+    <installment-repayments-widget :loading="loading" :title="widgetTitle"
+                                   v-else-if="widget.type === OverviewWidgetType.InstallmentRepayments" />
+
+    <fixed-variable-expense-widget :loading="loading" :title="widgetTitle"
+                                   :date-type="widget.settings['dateRange'] as number"
+                                   v-else-if="widget.type === OverviewWidgetType.FixedVariableExpense" />
+
+    <settlement-alerts-widget :loading="loading" :title="widgetTitle"
+                              v-else-if="widget.type === OverviewWidgetType.SettlementAlerts" />
+
     <asset-summary-widget :loading="loading" :title="widgetTitle"
                           v-else-if="widget.type === OverviewWidgetType.AssetSummary" />
 
@@ -89,6 +99,9 @@ import MonthlyExpenseOverviewWidget from './widgets/MonthlyExpenseOverviewWidget
 import MonthlyExpenseProgressWidget from './widgets/MonthlyExpenseProgressWidget.vue';
 import AssetSummaryWidget from './widgets/AssetSummaryWidget.vue';
 import RunwayWidget from './widgets/RunwayWidget.vue';
+import InstallmentRepaymentsWidget from './widgets/InstallmentRepaymentsWidget.vue';
+import FixedVariableExpenseWidget from './widgets/FixedVariableExpenseWidget.vue';
+import SettlementAlertsWidget from './widgets/SettlementAlertsWidget.vue';
 import PeriodIncomeExpenseWidget from './widgets/PeriodIncomeExpenseWidget.vue';
 import PeriodNetIncomeAndSavingsRateWidget from './widgets/PeriodNetIncomeAndSavingsRateWidget.vue';
 import IncomeExpenseTrendWidget from './widgets/IncomeExpenseTrendWidget.vue';
