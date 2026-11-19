@@ -22,7 +22,7 @@ import {
 
 import { isDefined, isArray, arrayItemToObjectField } from '@/lib/common.ts';
 import { BIG_DECIMAL_ZERO, isBigDecimal, parseBigDecimal } from '@/lib/numeral.ts';
-import { getCategorizedAccountsMap, getAllFilteredAccountsBalance } from '@/lib/account.ts';
+import { getCategorizedAccountsMap, getAllFilteredAccountsBalance, getAvailableFundsItems } from '@/lib/account.ts';
 import services from '@/lib/services.ts';
 import logger from '@/lib/logger.ts';
 
@@ -580,6 +580,39 @@ export const useAccountsStore = defineStore('accounts', () => {
             };
         } else {
             return totalLiabilities;
+        }
+    }
+
+    function getAvailableFunds(showAccountBalance: boolean): BigDecimal | HiddenAmount | BigDecimalWithSuffix {
+        if (!showAccountBalance) {
+            return DISPLAY_HIDDEN_AMOUNT;
+        }
+
+        let availableFunds: BigDecimal = BIG_DECIMAL_ZERO;
+        let hasUnCalculatedAmount = false;
+
+        for (const item of getAvailableFundsItems(allAccounts.value)) {
+            if (item.currency === userStore.currentUserDefaultCurrency) {
+                availableFunds = availableFunds.add(item.amount);
+            } else {
+                const amount = exchangeRatesStore.getExchangedAmount(item.amount, item.currency, userStore.currentUserDefaultCurrency);
+
+                if (!amount) {
+                    hasUnCalculatedAmount = true;
+                    continue;
+                }
+
+                availableFunds = availableFunds.add(amount.truncate());
+            }
+        }
+
+        if (hasUnCalculatedAmount) {
+            return {
+                value: availableFunds,
+                suffix: INCOMPLETE_AMOUNT_SUFFIX
+            };
+        } else {
+            return availableFunds;
         }
     }
 
@@ -1287,6 +1320,7 @@ export const useAccountsStore = defineStore('accounts', () => {
         getNetAssets,
         getTotalAssets,
         getTotalLiabilities,
+        getAvailableFunds,
         getAccountCategoryTotalBalance,
         getAccountBalance,
         getAccountSubAccountBalance,

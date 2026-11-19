@@ -3,6 +3,7 @@ package api
 import (
 	"slices"
 	"sort"
+	"time"
 
 	"github.com/mayswind/ezbookkeeping/pkg/core"
 	"github.com/mayswind/ezbookkeeping/pkg/duplicatechecker"
@@ -183,7 +184,7 @@ func (a *AccountsApi) AccountCreateHandler(c *core.WebContext) (any, *errs.Error
 		return nil, errs.ErrCannotSetStatementDateForNonCreditCard
 	}
 
-	if accountCreateReq.Category != models.ACCOUNT_CATEGORY_CREDIT_CARD && accountCreateReq.CreditCardLimit != "" {
+	if !accountCreateReq.Category.CanSetLimit() && accountCreateReq.CreditCardLimit != "" {
 		log.Warnf(c, "[accounts.AccountCreateHandler] cannot set credit limit with category \"%d\"", accountCreateReq.Category)
 		return nil, errs.ErrCannotSetCreditLimitForNonCreditCardAccount
 	}
@@ -196,6 +197,16 @@ func (a *AccountsApi) AccountCreateHandler(c *core.WebContext) (any, *errs.Error
 		if err != nil || creditLimitForCreditCard <= 0 {
 			return nil, errs.ErrIncompleteOrIncorrectSubmission
 		}
+	}
+
+	if accountCreateReq.Category == models.ACCOUNT_CATEGORY_DEBT && accountCreateReq.Type == models.ACCOUNT_TYPE_MULTI_SUB_ACCOUNTS && accountCreateReq.CreditCardLimit != "" {
+		log.Warnf(c, "[accounts.AccountCreateHandler] cannot set credit limit for debt account with sub-accounts")
+		return nil, errs.ErrCannotSetCreditLimitForNonCreditCardAccount
+	}
+
+	if !isValidAccountMaturityDate(accountCreateReq.MaturityDate) {
+		log.Warnf(c, "[accounts.AccountCreateHandler] maturity date \"%s\" is invalid", accountCreateReq.MaturityDate)
+		return nil, errs.ErrIncompleteOrIncorrectSubmission
 	}
 
 	if accountCreateReq.Type == models.ACCOUNT_TYPE_SINGLE_ACCOUNT {
@@ -392,7 +403,7 @@ func (a *AccountsApi) AccountModifyHandler(c *core.WebContext) (any, *errs.Error
 		return nil, errs.ErrCannotSetStatementDateForNonCreditCard
 	}
 
-	if accountModifyReq.Category != models.ACCOUNT_CATEGORY_CREDIT_CARD && accountModifyReq.CreditCardLimit != "" {
+	if !accountModifyReq.Category.CanSetLimit() && accountModifyReq.CreditCardLimit != "" {
 		log.Warnf(c, "[accounts.AccountModifyHandler] cannot set credit limit with category \"%d\"", accountModifyReq.Category)
 		return nil, errs.ErrCannotSetCreditLimitForNonCreditCardAccount
 	}
@@ -405,6 +416,11 @@ func (a *AccountsApi) AccountModifyHandler(c *core.WebContext) (any, *errs.Error
 		if err != nil || creditLimitForCreditCard <= 0 {
 			return nil, errs.ErrIncompleteOrIncorrectSubmission
 		}
+	}
+
+	if !isValidAccountMaturityDate(accountModifyReq.MaturityDate) {
+		log.Warnf(c, "[accounts.AccountModifyHandler] maturity date \"%s\" is invalid", accountModifyReq.MaturityDate)
+		return nil, errs.ErrIncompleteOrIncorrectSubmission
 	}
 
 	uid := c.GetCurrentUid()
@@ -905,7 +921,14 @@ func (a *AccountsApi) createNewAccountModel(uid int64, accountCreateReq *models.
 
 	if !isSubAccount && accountCreateReq.Category == models.ACCOUNT_CATEGORY_CREDIT_CARD {
 		accountExtend.CreditCardStatementDate = &accountCreateReq.CreditCardStatementDate
+	}
+
+	if !isSubAccount && accountCreateReq.Category.CanSetLimit() {
 		accountExtend.CreditCardLimit = creditLimitForCreditCard
+	}
+
+	if !isSubAccount {
+		fillAccountExtendFinancialSettings(accountExtend, accountCreateReq.InterestRate, accountCreateReq.MaturityDate, accountCreateReq.IncludeInAvailableFunds)
 	}
 
 	return &models.Account{
@@ -965,7 +988,14 @@ func (a *AccountsApi) getToUpdateAccount(user *models.User, accountModifyReq *mo
 
 	if !isSubAccount && accountModifyReq.Category == models.ACCOUNT_CATEGORY_CREDIT_CARD {
 		newAccountExtend.CreditCardStatementDate = &accountModifyReq.CreditCardStatementDate
+	}
+
+	if !isSubAccount && accountModifyReq.Category.CanSetLimit() && (oldAccount.Type != models.ACCOUNT_TYPE_MULTI_SUB_ACCOUNTS || accountModifyReq.Category == models.ACCOUNT_CATEGORY_CREDIT_CARD) {
 		newAccountExtend.CreditCardLimit = creditLimitForCreditCard
+	}
+
+	if !isSubAccount {
+		fillAccountExtendFinancialSettings(newAccountExtend, accountModifyReq.InterestRate, accountModifyReq.MaturityDate, accountModifyReq.IncludeInAvailableFunds)
 	}
 
 	newAccount := &models.Account{
@@ -1022,6 +1052,12 @@ func (a *AccountsApi) getToUpdateAccount(user *models.User, accountModifyReq *mo
 		return newAccount, nil
 	}
 
+	if !isInt64PointerValueEqual(newAccountExtend.InterestRate, oldAccountExtend, func(e *models.AccountExtend) *int64 { return e.InterestRate }) ||
+		!isStringPointerValueEqual(newAccountExtend.MaturityDate, oldAccountExtend, func(e *models.AccountExtend) *string { return e.MaturityDate }) ||
+		!isBoolPointerValueEqual(newAccountExtend.IncludeInAvailableFunds, oldAccountExtend, func(e *models.AccountExtend) *bool { return e.IncludeInAvailableFunds }) {
+		return newAccount, nil
+	}
+
 	return nil, nil
 }
 
@@ -1074,4 +1110,72 @@ func (a *AccountsApi) isAccountsIconTypeValid(c *core.WebContext, uid int64, acc
 	}
 
 	return iconExists
+}
+
+func isValidAccountMaturityDate(maturityDate string) bool {
+	if maturityDate == "" {
+		return true
+	}
+
+	_, err := time.Parse("2006-01-02", maturityDate)
+	return err == nil
+}
+
+func fillAccountExtendFinancialSettings(accountExtend *models.AccountExtend, interestRate *int64, maturityDate string, includeInAvailableFunds *bool) {
+	if interestRate != nil && *interestRate > 0 {
+		rate := *interestRate
+		accountExtend.InterestRate = &rate
+	}
+
+	if maturityDate != "" {
+		date := maturityDate
+		accountExtend.MaturityDate = &date
+	}
+
+	if includeInAvailableFunds != nil {
+		include := *includeInAvailableFunds
+		accountExtend.IncludeInAvailableFunds = &include
+	}
+}
+
+func isInt64PointerValueEqual(newValue *int64, oldExtend *models.AccountExtend, getter func(*models.AccountExtend) *int64) bool {
+	var oldValue *int64
+
+	if oldExtend != nil {
+		oldValue = getter(oldExtend)
+	}
+
+	if newValue == nil || oldValue == nil {
+		return newValue == nil && oldValue == nil
+	}
+
+	return *newValue == *oldValue
+}
+
+func isStringPointerValueEqual(newValue *string, oldExtend *models.AccountExtend, getter func(*models.AccountExtend) *string) bool {
+	var oldValue *string
+
+	if oldExtend != nil {
+		oldValue = getter(oldExtend)
+	}
+
+	if newValue == nil || oldValue == nil {
+		return newValue == nil && oldValue == nil
+	}
+
+	return *newValue == *oldValue
+}
+
+func isBoolPointerValueEqual(newValue *bool, oldExtend *models.AccountExtend, getter func(*models.AccountExtend) *bool) bool {
+	var oldValue *bool
+
+	if oldExtend != nil {
+		oldValue = getter(oldExtend)
+	}
+
+	if newValue == nil || oldValue == nil {
+		return newValue == nil && oldValue == nil
+	}
+
+	return *newValue == *oldValue
 }

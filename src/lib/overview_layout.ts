@@ -47,6 +47,7 @@ import {
     isTransactionFromAITextRecognitionEnabled,
     isTransactionFromAIImageRecognitionEnabled
 } from '@/lib/server_settings.ts';
+import { RUNWAY_COUNTED_MONTHS } from '@/lib/runway.ts';
 
 function normalizeOverviewWidgetSettings(definition: OverviewWidgetDefinitionBase, settings: unknown): Record<string, OverviewWidgetSettingValue> {
     const normalized = { ...definition.defaultSettings };
@@ -202,6 +203,9 @@ export function getOverviewTransactionOverviewMonths(layout: OverviewLayoutBase)
             }
         } else if (widget.type === OverviewWidgetType.CurrentMonthExpenseProgress) {
             months = Math.max(months, 2);
+        } else if (widget.type === OverviewWidgetType.Runway) {
+            // the last 3 completed months plus the current month
+            months = Math.max(months, RUNWAY_COUNTED_MONTHS + 1);
         }
     }
 

@@ -56,6 +56,22 @@ const WIDGET_BACKGROUND_COLOR_SETTINGS: OverviewWidgetColorSettingItem[] = [
 ];
 
 export const DESKTOP_OVERVIEW_WIDGET_DEFINITIONS: PartialRecord<OverviewWidgetType, DesktopOverviewWidgetDefinition> = {
+    [OverviewWidgetType.Runway]: {
+        type: OverviewWidgetType.Runway,
+        name: 'Runway',
+        supportsSettings: [
+            WIDGET_TITLE_SETTING
+        ],
+        defaultSettings: {},
+        defaultWidth: 5,
+        defaultHeight: 4,
+        minWidth: 3,
+        minHeight: 4,
+        dataRequirements: [
+            OverviewWidgetDataRequirement.Accounts,
+            OverviewWidgetDataRequirement.TransactionOverview
+        ]
+    },
     [OverviewWidgetType.AssetSummary]: {
         type: OverviewWidgetType.AssetSummary,
         name: 'Asset Summary',

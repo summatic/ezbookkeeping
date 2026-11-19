@@ -60,8 +60,13 @@ export function useAccountListPageBase() {
         return formatAmountToLocalizedNumeralsWithCurrency(totalLiabilities, defaultCurrency.value);
     });
 
+    const availableFunds = computed<string>(() => {
+        const availableFunds: BigDecimal | HiddenAmount | BigDecimalWithSuffix = accountsStore.getAvailableFunds(showAccountBalance.value);
+        return formatAmountToLocalizedNumeralsWithCurrency(availableFunds, defaultCurrency.value);
+    });
+
     function canShowAvailableCredit(account: Account): boolean {
-        return account.category === AccountCategory.CreditCard.type && account.numericCreditCardLimit > 0 && !!account.currency && account.currency !== ACCOUNT_CURRENCY_NOT_SET_VALUE;
+        return account.canSetLimit && account.numericCreditCardLimit > 0 && !!account.currency && account.currency !== ACCOUNT_CURRENCY_NOT_SET_VALUE;
     }
 
     function accountCategoryTotalBalance(accountCategory: AccountCategory | undefined, showAvailableCreditForCreditCard: boolean): string {
@@ -140,6 +145,34 @@ export function useAccountListPageBase() {
         }
     }
 
+    // Returns the used ratio (0-100) of the limit of a single liability account with a limit, or null if not applicable
+    function accountLimitUsagePercent(account: Account): number | null {
+        if (!canShowAvailableCredit(account) || account.type !== AccountType.SingleAccount.type) {
+            return null;
+        }
+
+        const used = -account.numericBalance;
+        const limit = account.numericCreditCardLimit;
+
+        if (limit <= 0) {
+            return null;
+        }
+
+        return Math.min(100, Math.max(0, Math.round(used / limit * 100)));
+    }
+
+    function accountLimitDisplay(account: Account): string {
+        return formatAmountToLocalizedNumeralsWithCurrency(parseBigDecimal(account.creditCardLimit), account.currency);
+    }
+
+    function accountInterestRateDisplay(account: Account): string | null {
+        if (!account.interestRate || account.interestRate <= 0) {
+            return null;
+        }
+
+        return `${(account.interestRate / 100).toFixed(2)}%`;
+    }
+
     function accountBalanceOrAvailableCredit(account: Account, currentSubAccountId: string | undefined, showAvailableCreditForCreditCard: boolean, showBalance: boolean, onlyShowSelectedAccountIds?: string[]): string | null {
         if (showAvailableCreditForCreditCard && account.category === AccountCategory.CreditCard.type) {
             return accountAvailableCredit(account, showBalance);
@@ -168,11 +201,15 @@ export function useAccountListPageBase() {
         netAssets,
         totalAssets,
         totalLiabilities,
+        availableFunds,
         // functions
         canShowAvailableCredit,
         accountCategoryTotalBalance,
         accountBalance,
         accountAvailableCredit,
+        accountLimitUsagePercent,
+        accountLimitDisplay,
+        accountInterestRateDisplay,
         accountBalanceOrAvailableCredit
     };
 }

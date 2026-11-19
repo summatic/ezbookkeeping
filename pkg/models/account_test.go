@@ -60,3 +60,48 @@ func TestAccountInfoResponseSliceLess(t *testing.T) {
 	assert.Equal(t, int64(5), accountRespSlice[4].Id)
 	assert.Equal(t, int64(3), accountRespSlice[5].Id)
 }
+
+func TestAccountIsIncludedInAvailableFunds(t *testing.T) {
+	assetAccount := &Account{Category: ACCOUNT_CATEGORY_VIRTUAL}
+	assert.True(t, assetAccount.IsIncludedInAvailableFunds())
+
+	debtAccount := &Account{Category: ACCOUNT_CATEGORY_DEBT}
+	assert.False(t, debtAccount.IsIncludedInAvailableFunds())
+
+	include := true
+	debtAccount.Extend = &AccountExtend{IncludeInAvailableFunds: &include}
+	assert.True(t, debtAccount.IsIncludedInAvailableFunds())
+
+	exclude := false
+	assetAccount.Extend = &AccountExtend{IncludeInAvailableFunds: &exclude}
+	assert.False(t, assetAccount.IsIncludedInAvailableFunds())
+}
+
+func TestAccountToAccountInfoResponseDebtLimitAndFinancialSettings(t *testing.T) {
+	limit := int64(1400000000)
+	rate := int64(561)
+	maturityDate := "2027-05-14"
+	include := true
+	account := &Account{
+		Category:        ACCOUNT_CATEGORY_DEBT,
+		ParentAccountId: LevelOneAccountParentId,
+		Extend: &AccountExtend{
+			CreditCardLimit:         &limit,
+			InterestRate:            &rate,
+			MaturityDate:            &maturityDate,
+			IncludeInAvailableFunds: &include,
+		},
+	}
+
+	response := account.ToAccountInfoResponse()
+	assert.Equal(t, "1400000000", *response.CreditCardLimit)
+	assert.Nil(t, response.CreditCardStatementDate)
+	assert.Equal(t, int64(561), *response.InterestRate)
+	assert.Equal(t, "2027-05-14", *response.MaturityDate)
+	assert.True(t, response.IncludeInAvailableFunds)
+
+	cashAccount := &Account{Category: ACCOUNT_CATEGORY_CASH, ParentAccountId: LevelOneAccountParentId}
+	cashResponse := cashAccount.ToAccountInfoResponse()
+	assert.Nil(t, cashResponse.CreditCardLimit)
+	assert.True(t, cashResponse.IncludeInAvailableFunds)
+}

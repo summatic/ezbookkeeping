@@ -4,6 +4,8 @@ import { AccountType, AccountCategory } from '@/core/account.ts';
 
 import { ACCOUNT_CURRENCY_NOT_SET_VALUE } from '@/consts/currency.ts';
 
+import type { BigDecimal } from '@/core/numeral.ts';
+
 import { type AccountBalance, type CategorizedAccount, Account } from '@/models/account.ts';
 
 import { isDefined } from '@/lib/common.ts';
@@ -383,4 +385,49 @@ export function isAllAccountsChecked(allAccounts: Account[], includeAccountIds: 
     }
 
     return true;
+}
+
+export interface AvailableFundsItem {
+    readonly accountId: string;
+    readonly amount: BigDecimal;
+    readonly currency: string;
+}
+
+// Returns the amounts that make up "available funds": balances of asset accounts and remaining limits of
+// liability accounts with a limit (e.g. credit lines), for visible top-level accounts flagged as included.
+export function getAvailableFundsItems(accounts: Account[]): AvailableFundsItem[] {
+    const ret: AvailableFundsItem[] = [];
+
+    for (const account of accounts) {
+        if (account.hidden || !account.includeInAvailableFunds) {
+            continue;
+        }
+
+        if (account.type === AccountType.SingleAccount.type) {
+            const balance = parseBigDecimal(account.balance);
+
+            if (account.isAsset) {
+                ret.push({ accountId: account.id, amount: balance, currency: account.currency });
+            } else if (account.isLiability && account.canSetLimit && account.numericCreditCardLimit > 0) {
+                // liability balances are negative when owing, so the remaining limit is limit + balance
+                ret.push({ accountId: account.id, amount: parseBigDecimal(account.creditCardLimit).add(balance), currency: account.currency });
+            }
+        } else if (account.type === AccountType.MultiSubAccounts.type && account.subAccounts) {
+            const visibleSubAccounts = account.subAccounts.filter(subAccount => !subAccount.hidden);
+
+            if (account.isAsset) {
+                for (const subAccount of visibleSubAccounts) {
+                    ret.push({ accountId: subAccount.id, amount: parseBigDecimal(subAccount.balance), currency: subAccount.currency });
+                }
+            } else if (account.isLiability && account.canSetLimit && account.numericCreditCardLimit > 0 && account.currency && account.currency !== ACCOUNT_CURRENCY_NOT_SET_VALUE) {
+                ret.push({ accountId: account.id, amount: parseBigDecimal(account.creditCardLimit), currency: account.currency });
+
+                for (const subAccount of visibleSubAccounts) {
+                    ret.push({ accountId: subAccount.id, amount: parseBigDecimal(subAccount.balance), currency: subAccount.currency });
+                }
+            }
+        }
+    }
+
+    return ret;
 }

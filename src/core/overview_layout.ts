@@ -14,7 +14,8 @@ export enum OverviewWidgetType {
     RecentTransactions = 'recent-transactions',
     TransactionCalendar = 'transaction-calendar',
     TransactionCalendarHeatmap = 'transaction-calendar-heatmap',
-    AddTransactionButton = 'add-transaction-button'
+    AddTransactionButton = 'add-transaction-button',
+    Runway = 'runway'
 }
 
 export enum OverviewWidgetDataRequirement {

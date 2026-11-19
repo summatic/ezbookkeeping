@@ -17,11 +17,20 @@
                     </span>
                 </div>
                 <span class="text-body-medium">{{ tt('Total assets') }}</span>
-                <div class="text-body-large mt-1">
+                <div class="text-body-large mt-1 mb-2">
                     <span v-if="!loading || allAccountCount > 0">{{ totalAssets }}</span>
                     <span v-else-if="loading && allAccountCount <= 0">
                         <v-skeleton-loader class="skeleton-no-margin mt-3 mb-2 pb-1" type="text" :loading="true"></v-skeleton-loader>
                     </span>
+                </div>
+                <div class="account-available-funds">
+                    <span class="text-body-medium">{{ tt('Available funds') }}</span>
+                    <div class="text-body-large font-weight-medium mt-1">
+                        <span v-if="!loading || allAccountCount > 0">{{ availableFunds }}</span>
+                        <span v-else-if="loading && allAccountCount <= 0">
+                            <v-skeleton-loader class="skeleton-no-margin mt-1" type="text" :loading="true"></v-skeleton-loader>
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -213,6 +222,35 @@
                                                     {{ element.getAccountOrSubAccountComment(activeSubAccount[element.id]) }}
                                                 </v-card-text>
 
+                                                <v-card-text class="pb-0" v-if="!activeSubAccount[element.id] && hasAccountFinancialInfo(element)">
+                                                    <div class="account-limit mb-3" v-if="accountLimitUsagePercent(element) !== null">
+                                                        <div class="d-flex align-center text-body-medium mb-1">
+                                                            <span>{{ tt('Limit') }} {{ accountLimitDisplay(element) }}</span>
+                                                            <v-spacer/>
+                                                            <span :class="{ 'text-error': (accountLimitUsagePercent(element) ?? 0) >= 90 }">{{ tt('Used') }} {{ accountLimitUsagePercent(element) }}%</span>
+                                                        </div>
+                                                        <v-progress-linear rounded height="8"
+                                                                           :color="(accountLimitUsagePercent(element) ?? 0) >= 90 ? 'error' : 'primary'"
+                                                                           :model-value="accountLimitUsagePercent(element) ?? 0" />
+                                                    </div>
+                                                    <div class="d-flex flex-wrap ga-2">
+                                                        <v-chip size="small" variant="tonal" v-if="accountInterestRateDisplay(element)">
+                                                            {{ tt('Annual Interest Rate') }} {{ accountInterestRateDisplay(element) }}
+                                                        </v-chip>
+                                                        <v-chip size="small" variant="tonal" v-if="element.maturityDate">
+                                                            {{ tt('Maturity Date') }} {{ element.maturityDate }}
+                                                        </v-chip>
+                                                        <v-chip size="small" variant="tonal" color="success"
+                                                                v-if="accountAvailableFundsTag(element) === 'included'">
+                                                            {{ tt('Included in available funds') }}
+                                                        </v-chip>
+                                                        <v-chip size="small" variant="tonal" color="error"
+                                                                v-if="accountAvailableFundsTag(element) === 'excluded'">
+                                                            {{ tt('Excluded from available funds') }}
+                                                        </v-chip>
+                                                    </div>
+                                                </v-card-text>
+
                                                 <v-card-text>
                                                     <div class="d-flex account-toolbar align-center">
                                                         <v-btn class="px-2" density="comfortable" color="default" variant="text"
@@ -289,7 +327,7 @@
                                                             {{ tt('Delete') }}
                                                         </v-btn>
                                                         <v-spacer/>
-                                                        <div class="d-flex align-center ms-2" v-if="element.category === AccountCategory.CreditCard.type">
+                                                        <div class="d-flex align-center ms-2" v-if="element.category === AccountCategory.CreditCard.type || canShowAvailableCredit(element)">
                                                             <div class="d-flex align-center">
                                                                 <span class="text-medium-emphasis me-3 pt-h1">{{ tt('pageSpecific.accountListPage.outstandingBalance') }}</span>
                                                                 <span class="account-balance">{{ accountBalance(element, activeSubAccount[element.id], showAccountBalance) }}</span>
@@ -302,7 +340,7 @@
                                                                 </div>
                                                             </template>
                                                         </div>
-                                                        <span class="account-balance ms-2" v-else-if="element.category !== AccountCategory.CreditCard.type">{{ accountBalance(element, activeSubAccount[element.id], showAccountBalance) }}</span>
+                                                        <span class="account-balance ms-2" v-else>{{ accountBalance(element, activeSubAccount[element.id], showAccountBalance) }}</span>
                                                     </div>
                                                 </v-card-text>
                                             </v-card>
@@ -415,7 +453,11 @@ const {
     canShowAvailableCredit,
     accountCategoryTotalBalance,
     accountBalance,
-    accountAvailableCredit
+    accountAvailableCredit,
+    availableFunds,
+    accountLimitUsagePercent,
+    accountLimitDisplay,
+    accountInterestRateDisplay
 } = useAccountListPageBase();
 
 const settingsStore = useSettingsStore();
@@ -501,6 +543,24 @@ function reload(force: boolean): void {
             desktopPageStore.addErrorToast(error);
         }
     });
+}
+
+// Tag only where it carries information: liabilities with a limit, debt accounts, and assets that were explicitly excluded
+function accountAvailableFundsTag(account: Account): 'included' | 'excluded' | null {
+    if (account.isLiability && canShowAvailableCredit(account)) {
+        return account.includeInAvailableFunds ? 'included' : 'excluded';
+    } else if (account.category === AccountCategory.DebtAccount.type || (account.isAsset && !account.includeInAvailableFunds)) {
+        return account.includeInAvailableFunds ? null : 'excluded';
+    }
+
+    return null;
+}
+
+function hasAccountFinancialInfo(account: Account): boolean {
+    return accountLimitUsagePercent(account) !== null ||
+        !!accountInterestRateDisplay(account) ||
+        !!account.maturityDate ||
+        accountAvailableFundsTag(account) !== null;
 }
 
 function hasAccount(accountCategory: AccountCategory): boolean {
@@ -786,6 +846,13 @@ reload(false);
 </script>
 
 <style>
+.account-available-funds {
+    padding: 8px 10px;
+    margin: 0 -10px;
+    border-radius: var(--ebk-radius-md);
+    background-color: rgba(var(--v-theme-primary), 0.08);
+}
+
 .account-category-tabs .nav-link {
     height: calc(var(--v-tabs-height) * 1.5);
 }
