@@ -15,9 +15,11 @@ import { useSettingsStore } from '@/stores/setting.ts';
 import { useAccountsStore } from '@/stores/account.ts';
 import { useTransactionCategoriesStore } from '@/stores/transactionCategory.ts';
 import { useOverviewStore } from '@/stores/overview.ts';
+import { useTransactionTemplatesStore } from '@/stores/transactionTemplate.ts';
 import { useDesktopPageStore } from '@/stores/desktopPage.ts';
 
 import type { PartialRecord } from '@/core/base.ts';
+import { TemplateType } from '@/core/template.ts';
 import { type DesktopOverviewLayout, OverviewWidgetDataRequirement } from '@/core/overview_layout.ts';
 import { DESKTOP_OVERVIEW_WIDGET_DEFINITIONS, DEFAULT_DESKTOP_OVERVIEW_LAYOUT } from '@/consts/overview_layout.ts';
 
@@ -39,6 +41,7 @@ const settingsStore = useSettingsStore();
 const accountsStore = useAccountsStore();
 const transactionCategoriesStore = useTransactionCategoriesStore();
 const overviewStore = useOverviewStore();
+const transactionTemplatesStore = useTransactionTemplatesStore();
 const desktopPageStore = useDesktopPageStore();
 
 const loadingOverview = ref<boolean>(true);
@@ -108,6 +111,13 @@ function reload(force: boolean): void {
 
     if (requirements[OverviewWidgetDataRequirement.CurrentMonthTransactions]) {
         promises.push(overviewStore.loadCurrentMonthTransactions({
+            force: force
+        }));
+    }
+
+    if (requirements[OverviewWidgetDataRequirement.ScheduledTransactions]) {
+        promises.push(transactionTemplatesStore.loadAllTemplates({
+            templateType: TemplateType.Schedule.type,
             force: force
         }));
     }

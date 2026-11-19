@@ -4,6 +4,18 @@
                           :dark-background-color="widget.settings['darkBackgroundColor'] as ColorValue"
                           v-if="widget.type === OverviewWidgetType.AssetSummary" />
 
+    <runway-widget :loading="loading" :title="widgetTitle"
+                   :show-title="widget.settings['showTitle'] as boolean"
+                   v-else-if="widget.type === OverviewWidgetType.Runway" />
+
+    <installment-repayments-widget :loading="loading" :title="widgetTitle"
+                                   :show-title="widget.settings['showTitle'] as boolean"
+                                   v-else-if="widget.type === OverviewWidgetType.InstallmentRepayments" />
+
+    <settlement-alerts-widget :loading="loading" :title="widgetTitle"
+                              :show-title="widget.settings['showTitle'] as boolean"
+                              v-else-if="widget.type === OverviewWidgetType.SettlementAlerts" />
+
     <account-balance-list-widget :loading="loading" :title="widgetTitle"
                                  :show-title="widget.settings['showTitle'] as boolean"
                                  :account-ids="widget.settings['accountIds'] as string[]"
@@ -80,6 +92,9 @@ import MonthlyExpenseOverviewWidget from './widgets/MonthlyExpenseOverviewWidget
 import MonthlyExpenseProgressWidget from './widgets/MonthlyExpenseProgressWidget.vue';
 import PeriodIncomeExpenseWidget from './widgets/PeriodIncomeExpenseWidget.vue';
 import PeriodNetIncomeAndSavingsRateWidget from './widgets/PeriodNetIncomeAndSavingsRateWidget.vue';
+import RunwayWidget from './widgets/RunwayWidget.vue';
+import InstallmentRepaymentsWidget from './widgets/InstallmentRepaymentsWidget.vue';
+import SettlementAlertsWidget from './widgets/SettlementAlertsWidget.vue';
 import ExpenseCategoryRankingWidget from './widgets/ExpenseCategoryRankingWidget.vue';
 import RecentTransactionsWidget from './widgets/RecentTransactionsWidget.vue';
 import TransactionCalendarWidget from './widgets/TransactionCalendarWidget.vue';

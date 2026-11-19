@@ -270,7 +270,7 @@ export function getOverviewTransactionCategoryStatisticDateTypes(layout: Overvie
     const existingDateTypes: Record<number, boolean> = {};
 
     for (const widget of layout.widgets) {
-        if (widget.type !== OverviewWidgetType.ExpenseCategoryRanking) {
+        if (widget.type !== OverviewWidgetType.ExpenseCategoryRanking && widget.type !== OverviewWidgetType.FixedVariableExpense) {
             continue;
         }
 

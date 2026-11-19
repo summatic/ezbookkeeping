@@ -180,7 +180,11 @@
             "ruleCount": "{count} rules",
             "accountActivationAndResendValidationEmailTip": "Ein Aktivierungslink wurde an Ihre E-Mail-Adresse gesendet: {email}. Wenn Sie die E-Mail nicht erhalten haben, geben Sie bitte das Passwort erneut ein und klicken Sie auf die Schaltfläche unten, um die Bestätigungs-E-Mail erneut zu senden.",
             "resendValidationEmailTip": "Wenn Sie die E-Mail nicht erhalten haben, geben Sie bitte das Passwort erneut ein und klicken Sie auf die Schaltfläche unten, um die Bestätigungs-E-Mail an: {email} erneut zu senden.",
-            "oauth2bindTip": "Sie melden sich beim Benutzer {userName} mit {providerName} an. Bitte geben Sie Ihr ezBookkeeping-Passwort zur Bestätigung ein."
+            "oauth2bindTip": "Sie melden sich beim Benutzer {userName} mit {providerName} an. Bitte geben Sie Ihr ezBookkeeping-Passwort zur Bestätigung ein.",
+            "creditLineAlmostUsedAlert": "{name} limit is {percent}% used, {remaining} left",
+            "shortRunwayAlert": "Available funds last only {months} months at the recent deficit",
+            "installmentShareOfDeficitAlert": "Installment repayments this month are {percent}% of the average monthly deficit",
+            "installmentEndingSoonAlert": "{name} installment ends in {month}"
         }
     },
     "dataExport": {
@@ -2140,6 +2144,19 @@
     "Sub-account Last Reconciled Time": "Teilkonto der letzten Überprüfungszeit",
     "Statement Date": "Abrechnungsdatum",
     "Credit Limit": "Kreditlimit",
+    "Installment Repayments": "Installment Repayments",
+    "No installment found. Add monthly scheduled expenses with an end date to see them here.": "No installment found. Add monthly scheduled expenses with an end date to see them here.",
+    "Remaining": "Remaining",
+    "Ends": "Ends",
+    "Fixed and Variable Expenses": "Fixed and Variable Expenses",
+    "Set Fixed Expense Categories": "Set Fixed Expense Categories",
+    "Fixed Expense Categories": "Fixed Expense Categories",
+    "No fixed expense category is set yet.": "No fixed expense category is set yet.",
+    "Fixed Expenses": "Fixed Expenses",
+    "Variable Expenses": "Variable Expenses",
+    "Settlement Alerts": "Settlement Alerts",
+    "No alerts": "No alerts",
+    "View Accounts": "View Accounts",
     "Available funds": "Available funds",
     "Limit": "Limit",
     "Used": "Used",

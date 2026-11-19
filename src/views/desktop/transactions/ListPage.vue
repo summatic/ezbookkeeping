@@ -194,6 +194,15 @@
                                             <span>{{ currentMonthTotalAmount.expenseInDefaultCurrency }}</span>
                                         </v-tooltip>
                                     </span>
+                                    <template v-if="totalAmountTypeInTransactionListPage === TransactionAmountType.IncomeAndExpense || totalAmountTypeInTransactionListPage === TransactionAmountType.InflowsAndOutflows">
+                                        <span class="text-body-large ms-3">{{ totalAmountTypeInTransactionListPage === TransactionAmountType.IncomeAndExpense ? tt('Net Income') : tt('Net Cash Flow') }}</span>
+                                        <span class="ms-2" v-if="loading">
+                                            <v-skeleton-loader type="text" style="width: 60px" :loading="true"></v-skeleton-loader>
+                                        </span>
+                                        <span class="text-body-large font-weight-medium ms-2" :class="{ 'text-error': currentMonthTotalAmount.netIsNegative }" v-else-if="!loading">
+                                            {{ currentMonthTotalAmount.net }}
+                                        </span>
+                                    </template>
                                 </div>
                             </div>
                         </v-card-text>

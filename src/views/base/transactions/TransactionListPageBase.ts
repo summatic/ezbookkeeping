@@ -55,6 +55,8 @@ export interface TransactionListDisplayTotalAmount {
     expense: string;
     incomeInDefaultCurrency: string;
     expenseInDefaultCurrency: string;
+    net: string;
+    netIsNegative: boolean;
 }
 
 export class TransactionListPageType implements TypeAndName {
@@ -413,7 +415,9 @@ export function useTransactionListPageBase() {
             income: getDisplayTotalAmount(totalAmount.income, selectedAccountDefaultCurrency.value, prefix, totalAmount.incompleteIncome),
             expense: getDisplayTotalAmount(totalAmount.expense, selectedAccountDefaultCurrency.value, prefix, totalAmount.incompleteExpense),
             incomeInDefaultCurrency: getDisplayTotalAmount(totalAmount.income, selectedAccountDefaultCurrency.value, prefix, totalAmount.incompleteIncome, true),
-            expenseInDefaultCurrency: getDisplayTotalAmount(totalAmount.expense, selectedAccountDefaultCurrency.value, prefix, totalAmount.incompleteExpense, true)
+            expenseInDefaultCurrency: getDisplayTotalAmount(totalAmount.expense, selectedAccountDefaultCurrency.value, prefix, totalAmount.incompleteExpense, true),
+            net: getDisplayTotalAmount(totalAmount.income.subtract(totalAmount.expense), selectedAccountDefaultCurrency.value, prefix, totalAmount.incompleteIncome || totalAmount.incompleteExpense),
+            netIsNegative: totalAmount.income.lessThan(totalAmount.expense)
         };
 
         return displayMonthlyTotalAmount;

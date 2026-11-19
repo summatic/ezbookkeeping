@@ -56,6 +56,7 @@ var ALL_ALLOWED_CLOUD_SYNC_APP_SETTING_KEY_TYPES = map[string]UserApplicationClo
 	"showTagInInsightsExplorerPage":        USER_APPLICATION_CLOUD_SETTING_TYPE_BOOLEAN,
 	// Account List Page
 	"totalAmountExcludeAccountIds":                               USER_APPLICATION_CLOUD_SETTING_TYPE_STRING_BOOLEAN_MAP,
+	"fixedExpenseCategoryIds":                                    USER_APPLICATION_CLOUD_SETTING_TYPE_STRING_BOOLEAN_MAP,
 	"hideCategoriesWithoutAccounts":                              USER_APPLICATION_CLOUD_SETTING_TYPE_BOOLEAN,
 	"defaultCreditCardAmountDisplayTypeInMobile":                 USER_APPLICATION_CLOUD_SETTING_TYPE_NUMBER,
 	"reconciliationStatementButtonDefaultDateRangeTypeInDesktop": USER_APPLICATION_CLOUD_SETTING_TYPE_NUMBER,

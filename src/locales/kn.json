@@ -180,7 +180,11 @@
             "ruleCount": "{count} rules",
             "accountActivationAndResendValidationEmailTip": "ಖಾತೆ ಸಕ್ರಿಯಗೊಳಿಸುವ ಲಿಂಕ್ ಅನ್ನು ನಿಮ್ಮ ಈಮೇಲ್‌ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ: {email}. ನೀವು ಇಮೇಲ್ ಪಡೆಯದಿದ್ದರೆ, ದಯವಿಟ್ಟು ಪಾಸ್‌ವರ್ಡ್ ಮರು ನಮೂದಿಸಿ ಮತ್ತು ಕೆಳಗಿನ ಬಟನ್ ಒತ್ತಿ ಸರೀಕರಿಸುವ ಇಮೇಲ್ ಮರು ಕಳುಹಿಸಿ.",
             "resendValidationEmailTip": "ನೀವು ಇಮೇಲ್ ಪಡೆಯದಿದ್ದರೆ, ದಯವಿಟ್ಟು ಪಾಸ್‌ವರ್ಡ್ ಮರು ನಮೂದಿಸಿ ಮತ್ತು ಕೆಳಗಿನ ಬಟನ್ ಒತ್ತಿ ಮರು ಸರೀಕರಿಸುವ ಇಮೇಲ್ ಕಳುಹಿಸಲಾಗುವುದು: {email}",
-            "oauth2bindTip": "ನೀವು {providerName} ಬಳಸಿ {userName} ಬಳಕೆದಾರರಾಗಿ ಲಾಗಿನ್ ಆಗುತ್ತಿದ್ದೀರಿ. ದೃಢೀಕರಿಸಲು ದಯವಿಟ್ಟು ನಿಮ್ಮ ezBookkeeping ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ."
+            "oauth2bindTip": "ನೀವು {providerName} ಬಳಸಿ {userName} ಬಳಕೆದಾರರಾಗಿ ಲಾಗಿನ್ ಆಗುತ್ತಿದ್ದೀರಿ. ದೃಢೀಕರಿಸಲು ದಯವಿಟ್ಟು ನಿಮ್ಮ ezBookkeeping ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.",
+            "creditLineAlmostUsedAlert": "{name} limit is {percent}% used, {remaining} left",
+            "shortRunwayAlert": "Available funds last only {months} months at the recent deficit",
+            "installmentShareOfDeficitAlert": "Installment repayments this month are {percent}% of the average monthly deficit",
+            "installmentEndingSoonAlert": "{name} installment ends in {month}"
         }
     },
     "dataExport": {
@@ -2140,6 +2144,19 @@
     "Sub-account Last Reconciled Time": "Sub-account Last Reconciled Time",
     "Statement Date": "ಸ್ಟೇಟ್ಮೆಂಟ್ ದಿನಾಂಕ",
     "Credit Limit": "Credit Limit",
+    "Installment Repayments": "Installment Repayments",
+    "No installment found. Add monthly scheduled expenses with an end date to see them here.": "No installment found. Add monthly scheduled expenses with an end date to see them here.",
+    "Remaining": "Remaining",
+    "Ends": "Ends",
+    "Fixed and Variable Expenses": "Fixed and Variable Expenses",
+    "Set Fixed Expense Categories": "Set Fixed Expense Categories",
+    "Fixed Expense Categories": "Fixed Expense Categories",
+    "No fixed expense category is set yet.": "No fixed expense category is set yet.",
+    "Fixed Expenses": "Fixed Expenses",
+    "Variable Expenses": "Variable Expenses",
+    "Settlement Alerts": "Settlement Alerts",
+    "No alerts": "No alerts",
+    "View Accounts": "View Accounts",
     "Available funds": "Available funds",
     "Limit": "Limit",
     "Used": "Used",

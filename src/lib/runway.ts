@@ -34,7 +34,8 @@ export function calculateRunway(availableFunds: BigDecimal, monthlyAmounts: Runw
         totalDeficit = totalDeficit.add(item.expenseAmount).subtract(item.incomeAmount);
     }
 
-    const averageMonthlyDeficit = totalDeficit.divide(monthlyAmounts.length).truncate();
+    // amounts are stored in hundredths of the currency unit, round the average to a whole unit
+    const averageMonthlyDeficit = totalDeficit.divide(monthlyAmounts.length * 100).truncate().multiply(100);
 
     if (!averageMonthlyDeficit.isPositive()) {
         return {

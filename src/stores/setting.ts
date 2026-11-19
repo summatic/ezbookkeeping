@@ -393,6 +393,12 @@ export const useSettingsStore = defineStore('settings', () => {
         updateUserApplicationCloudSettingValue('totalAmountExcludeAccountIds', value);
     }
 
+    function setFixedExpenseCategoryIds(value: Record<string, boolean>): void {
+        updateApplicationSettingsValue('fixedExpenseCategoryIds', value);
+        appSettings.value.fixedExpenseCategoryIds = value;
+        updateUserApplicationCloudSettingValue('fixedExpenseCategoryIds', value);
+    }
+
     function setHideCategoriesWithoutAccounts(value: boolean): void {
         updateApplicationSettingsValue('hideCategoriesWithoutAccounts', value);
         appSettings.value.hideCategoriesWithoutAccounts = value;
@@ -696,6 +702,7 @@ export const useSettingsStore = defineStore('settings', () => {
         setShowTagInInsightsExplorerPage,
         // -- Account List Page
         setTotalAmountExcludeAccountIds,
+        setFixedExpenseCategoryIds,
         setHideCategoriesWithoutAccounts,
         setDefaultCreditCardAmountDisplayTypeInMobile,
         setReconciliationStatementButtonDefaultDateRangeTypeInDesktop,

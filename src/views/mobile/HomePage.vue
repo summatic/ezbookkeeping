@@ -256,6 +256,13 @@ function reloadOverviewData(force: boolean): Promise<unknown>[] {
         }));
     }
 
+    if (requirements[OverviewWidgetDataRequirement.ScheduledTransactions]) {
+        promises.push(transactionTemplatesStore.loadAllTemplates({
+            templateType: TemplateType.Schedule.type,
+            force: force
+        }));
+    }
+
     if (requirements[OverviewWidgetDataRequirement.DailyTransactionAmounts]) {
         promises.push(overviewStore.loadTransactionDailyAmounts({
             force: force,

@@ -86,6 +86,7 @@ export interface ApplicationSettings extends BaseApplicationSetting {
     showTagInInsightsExplorerPage: boolean;
     // Account List Page
     totalAmountExcludeAccountIds: Record<string, boolean>;
+    fixedExpenseCategoryIds: Record<string, boolean>;
     hideCategoriesWithoutAccounts: boolean;
     defaultCreditCardAmountDisplayTypeInMobile: number;
     reconciliationStatementButtonDefaultDateRangeTypeInDesktop: number;
@@ -184,6 +185,7 @@ export const ALL_ALLOWED_CLOUD_SYNC_APP_SETTING_KEY_TYPES: Record<string, UserAp
     'showTagInInsightsExplorerPage': UserApplicationCloudSettingType.Boolean,
     // Account List Page
     'totalAmountExcludeAccountIds': UserApplicationCloudSettingType.StringBooleanMap,
+    'fixedExpenseCategoryIds': UserApplicationCloudSettingType.StringBooleanMap,
     'hideCategoriesWithoutAccounts': UserApplicationCloudSettingType.Boolean,
     'defaultCreditCardAmountDisplayTypeInMobile': UserApplicationCloudSettingType.Number,
     'reconciliationStatementButtonDefaultDateRangeTypeInDesktop': UserApplicationCloudSettingType.Number,
@@ -262,6 +264,7 @@ export const DEFAULT_APPLICATION_SETTINGS: ApplicationSettings = {
     showTagInInsightsExplorerPage: true,
     // Account List Page
     totalAmountExcludeAccountIds: {},
+    fixedExpenseCategoryIds: {},
     hideCategoriesWithoutAccounts: false,
     defaultCreditCardAmountDisplayTypeInMobile: CreditCardAmountDisplayType.Default.type,
     reconciliationStatementButtonDefaultDateRangeTypeInDesktop: DEFAULT_RECONCILIATION_STATEMENT_DATE_RANGE_IN_DESKTOP.type,

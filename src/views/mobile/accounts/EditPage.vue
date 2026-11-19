@@ -186,9 +186,9 @@
                 link="#" no-chevron
                 class="list-item-with-header-and-title"
                 :class="{ 'disabled': account.currency === '' || account.currency === ACCOUNT_CURRENCY_NOT_SET_VALUE }"
-                :header="tt('Credit Limit')"
+                :header="account.category === AccountCategory.CreditCard.type ? tt('Credit Limit') : tt('Limit')"
                 :title="getAccountCreditCardCreditLimitDisplayValue(account.numericCreditCardLimit, account.currency)"
-                v-if="account.category === AccountCategory.CreditCard.type"
+                v-if="account.canSetLimit"
                 @click="showCreditCardLimitSheet = true"
             >
                 <number-pad-sheet :min-value="0"
@@ -218,6 +218,34 @@
                                            v-model:show="accountContext.showCreditCardStatementDatePopup"
                                            v-model="account.creditCardStatementDate">
                 </list-item-selection-popup>
+            </f7-list-item>
+
+            <f7-list-input
+                type="number"
+                min="0"
+                step="0.01"
+                :label="tt('Annual Interest Rate') + ' (%)'"
+                :placeholder="tt('Annual Interest Rate')"
+                :value="interestRatePercent"
+                v-if="canSetFinancialTerms"
+                @input="interestRatePercent = $event.target.value"
+            ></f7-list-input>
+
+            <f7-list-input
+                type="date"
+                clear-button
+                :label="tt('Maturity Date')"
+                :value="account.maturityDate ?? ''"
+                v-if="canSetFinancialTerms"
+                @input="account.maturityDate = $event.target.value || undefined"
+            ></f7-list-input>
+
+            <f7-list-item :title="tt('Include in Available Funds')"
+                          :footer="account.isLiability ? tt('Remaining limit of this account is counted as available funds') : tt('Balance of this account is counted as available funds')"
+                          v-if="account.isAsset || account.canSetLimit">
+                <template #after>
+                    <f7-toggle :checked="account.includeInAvailableFunds" @toggle:change="account.includeInAvailableFunds = $event"></f7-toggle>
+                </template>
             </f7-list-item>
 
             <f7-list-item
@@ -425,6 +453,14 @@
                                            v-model:show="accountContext.showCreditCardStatementDatePopup"
                                            v-model="account.creditCardStatementDate">
                 </list-item-selection-popup>
+            </f7-list-item>
+
+            <f7-list-item :title="tt('Include in Available Funds')"
+                          :footer="tt('Balance of this account is counted as available funds')"
+                          v-if="account.isAsset">
+                <template #after>
+                    <f7-toggle :checked="account.includeInAvailableFunds" @toggle:change="account.includeInAvailableFunds = $event"></f7-toggle>
+                </template>
             </f7-list-item>
 
             <f7-list-item :title="tt('Visible')" v-if="editAccountId">
@@ -754,6 +790,19 @@ const showCreditCardLimitSheet = ref<boolean>(false);
 
 const allCurrencies = computed<LocalizedCurrencyInfo[]>(() => getAllCurrencies());
 const allCurrenciesWithNotSet = computed<LocalizedCurrencyInfo[]>(() => getAllCurrencies(true));
+
+const canSetFinancialTerms = computed<boolean>(() =>
+    account.value.category === AccountCategory.DebtAccount.type ||
+    account.value.category === AccountCategory.SavingsAccount.type ||
+    account.value.category === AccountCategory.CertificateOfDeposit.type);
+
+const interestRatePercent = computed<string>({
+    get: () => account.value.interestRate ? (account.value.interestRate / 100).toString(10) : '',
+    set: (value: string) => {
+        const rate = parseFloat(value);
+        account.value.interestRate = Number.isFinite(rate) && rate > 0 ? Math.round(rate * 100) : undefined;
+    }
+});
 
 function formatAccountDisplayBalance(selectedAccount: Account): string {
     const balance = parseBigDecimal(selectedAccount.balance);
