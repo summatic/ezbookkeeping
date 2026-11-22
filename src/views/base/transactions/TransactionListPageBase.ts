@@ -15,6 +15,7 @@ import type { BigDecimal, NumeralSystem } from '@/core/numeral.ts';
 import { type TextualYearMonthDay, type Year0BasedMonth, type LocalizedDateRange, type WeekDayValue, DateRange, DateRangeScene } from '@/core/datetime.ts';
 import { AccountType } from '@/core/account.ts';
 import { TransactionType, TransactionAmountType } from '@/core/transaction.ts';
+import { withTransactionAmountSign } from '@/lib/amount_sign.ts';
 import { DISPLAY_HIDDEN_AMOUNT, INCOMPLETE_AMOUNT_SUFFIX } from '@/consts/numeral.ts';
 import { DEFAULT_TAG_GROUP_ID } from '@/consts/tag.ts';
 
@@ -451,6 +452,10 @@ export function useTransactionListPageBase() {
     }
 
     function getDisplayAmount(transaction: Transaction, inUserDefaultCurrency?: boolean): string {
+        return withTransactionAmountSign(getDisplayUnsignedAmount(transaction, inUserDefaultCurrency), transaction.type, transaction.hideAmount);
+    }
+
+    function getDisplayUnsignedAmount(transaction: Transaction, inUserDefaultCurrency?: boolean): string {
         if (queryAllFilterAccountIdsCount.value < 1) {
             if (transaction.sourceAccount) {
                 return formatAmount(parseBigDecimal(transaction.sourceAmount), transaction.hideAmount, transaction.sourceAccount.currency, inUserDefaultCurrency);

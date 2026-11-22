@@ -4,10 +4,8 @@
     min-width: 0;
     overflow: hidden;
     container: overview-widget / inline-size;
-    border: 1px solid rgba(var(--ebk-border), 0.075);
-    background:
-        radial-gradient(ellipse at 100% 0, rgba(var(--v-theme-primary), 0.045), transparent 18rem),
-        rgb(var(--v-theme-surface));
+    border: 1px solid rgba(var(--ebk-border), 0.12);
+    background: rgb(var(--v-theme-surface));
 
     > .v-card-item {
         flex: 0 0 auto;
@@ -44,7 +42,7 @@
     }
 
     .overview-widget__caption {
-        color: rgba(var(--v-theme-on-surface), 0.62);
+        color: rgba(var(--v-theme-on-surface), 0.72);
         line-height: 1.5;
     }
 
@@ -233,10 +231,7 @@
 }
 
 .monthly-expense-widget {
-    background:
-        radial-gradient(circle at 100% 100%, rgba(var(--v-theme-primary), 0.075), transparent 11rem),
-        linear-gradient(145deg, rgba(var(--v-theme-primary), 0.035), transparent 56%),
-        rgb(var(--v-theme-surface));
+    background: rgb(var(--v-theme-surface));
 
     &::after {
         position: absolute;

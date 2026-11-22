@@ -409,6 +409,13 @@
         "licenseUrl": "https://github.com/jalaali/jalaali-js/blob/v2.0.1/LICENSE"
     },
     {
+        "name": "Pretendard",
+        "copyright": "Copyright (c) 2021 Kil Hyung-jin, with Reserved Font Name Pretendard",
+        "url": "https://github.com/orioncactus/pretendard",
+        "license": "SIL Open Font License 1.1",
+        "licenseUrl": "https://github.com/orioncactus/pretendard/blob/v1.3.9/LICENSE"
+    },
+    {
         "name": "Icons8 Line Awesome",
         "url": "https://icons8.com/line-awesome",
         "license": "Good Boy License",

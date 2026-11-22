@@ -18,13 +18,21 @@
     --f7-color-gray-tint: #a3a3a7;
     --f7-notification-title-text-transform: unset;
 
+    --f7-font-family: 'Pretendard Variable', Pretendard, -apple-system, system-ui, 'Helvetica Neue', 'Segoe UI', roboto, arial, sans-serif;
+
     --ebk-icon-default-color: #000;
-    --ebk-primary-color: 198, 126, 72;
+    --ebk-primary-color: 29, 78, 216;
     --ebk-chevron-icon-color: rgba(0, 0, 0, 0.2);
     --ebk-transaction-tag-chip-bg-color: rgba(0, 0, 0, 0.04);
 }
 
 :root.dark {
+    /* framework7 derives one theme color for both modes; use the brighter blue on dark backgrounds */
+    --f7-theme-color: #4c9aff;
+    --f7-theme-color-rgb: 76, 154, 255;
+    --f7-theme-color-shade: #3b82f6;
+    --f7-theme-color-tint: #79b4ff;
+    --ebk-primary-color: 76, 154, 255;
     --f7-fab-bg-color: var(--f7-glass-bg-color);
     --f7-fab-pressed-bg-color: var(--f7-glass-bg-color);
     --f7-fab-text-color: var(--f7-theme-color);
@@ -33,6 +41,26 @@
     --ebk-icon-default-color: #fff;
     --ebk-chevron-icon-color: rgba(255, 255, 255, 0.3);
     --ebk-transaction-tag-chip-bg-color: rgba(255, 255, 255, 0.04);
+}
+
+/* framework7's default secondary text (45% black) is ~3.4:1 on white; raise it to meet WCAG AA */
+.ios:not(.dark) {
+    --f7-list-item-after-text-color: rgba(0, 0, 0, 0.62);
+    --f7-list-item-footer-text-color: rgba(0, 0, 0, 0.62);
+    --f7-list-item-text-text-color: rgba(0, 0, 0, 0.62);
+    --f7-list-group-title-text-color: rgba(0, 0, 0, 0.62);
+    --f7-block-header-text-color: rgba(0, 0, 0, 0.62);
+    --f7-block-footer-text-color: rgba(0, 0, 0, 0.62);
+    --f7-block-title-text-color: rgba(0, 0, 0, 0.66);
+}
+
+/* framework7's ios red (#ff3b30) is too light for text on white */
+:root:not(.dark) .text-color-red {
+    --f7-theme-color-text-color: #b91c1c;
+}
+
+:root.dark .text-color-red {
+    --f7-theme-color-text-color: #ff6b81;
 }
 
 .ios .dark,

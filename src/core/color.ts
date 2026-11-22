@@ -18,14 +18,14 @@ export class PresetAmountColor implements TypeAndName {
     private static readonly allInstancesByType: Record<number, PresetAmountColor> = {};
 
     public static readonly SystemDefaultType: number = 0;
-    public static readonly Green = new PresetAmountColor(1, 'Green', '#009688', '#009688', 'expense-amount-color-green', 'income-amount-color-green');
-    public static readonly Red = new PresetAmountColor(2, 'Red', '#d43f3f', '#d43f3f', 'expense-amount-color-red', 'income-amount-color-red');
-    public static readonly Yellow = new PresetAmountColor(3, 'Yellow', '#e2b60a', '#e2b60a', 'expense-amount-color-yellow', 'income-amount-color-yellow');
-    public static readonly Blue = new PresetAmountColor(5, 'Blue', '#3873bf', '#3873bf', 'expense-amount-color-blue', 'income-amount-color-blue');
-    public static readonly BlackOrWhite = new PresetAmountColor(4, 'Black or White', '#413935', '#fcf0e3', 'expense-amount-color-blackorwhite', 'income-amount-color-blackorwhite');
+    public static readonly Green = new PresetAmountColor(1, 'Green', '#047857', '#3ddc97', 'expense-amount-color-green', 'income-amount-color-green');
+    public static readonly Red = new PresetAmountColor(2, 'Red', '#b91c1c', '#ff6b81', 'expense-amount-color-red', 'income-amount-color-red');
+    public static readonly Yellow = new PresetAmountColor(3, 'Yellow', '#a16207', '#f5c451', 'expense-amount-color-yellow', 'income-amount-color-yellow');
+    public static readonly Blue = new PresetAmountColor(5, 'Blue', '#1d4ed8', '#4c9aff', 'expense-amount-color-blue', 'income-amount-color-blue');
+    public static readonly BlackOrWhite = new PresetAmountColor(4, 'Black or White', '#1f2937', '#e6e8eb', 'expense-amount-color-blackorwhite', 'income-amount-color-blackorwhite');
 
-    public static readonly DefaultExpenseColor = PresetAmountColor.Green;
-    public static readonly DefaultIncomeColor = PresetAmountColor.Red;
+    public static readonly DefaultExpenseColor = PresetAmountColor.Red;
+    public static readonly DefaultIncomeColor = PresetAmountColor.Green;
 
     public readonly type: number;
     public readonly name: string;

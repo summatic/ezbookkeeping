@@ -139,6 +139,7 @@ import type { TransactionCategory } from '@/models/transaction_category.ts';
 import type { TransactionInfoResponse } from '@/models/transaction.ts';
 
 import { parseBigDecimal } from '@/lib/numeral.ts';
+import { withTransactionAmountSign } from '@/lib/amount_sign.ts';
 import { parseDateTimeFromUnixTimeWithTimezoneOffset } from '@/lib/datetime.ts';
 import { getCategoryIconType } from '@/lib/icon.ts';
 import { getOverviewRecentTransactionsQuery } from '@/lib/overview_layout.ts';
@@ -216,7 +217,8 @@ function getDisplayTime(transaction: TransactionInfoResponse): string {
 function getDisplayAmount(transaction: TransactionInfoResponse): string {
     const account = getSourceAccount(transaction);
     const amount = !showAmountInHomePage.value || transaction.hideAmount ? DISPLAY_HIDDEN_AMOUNT : parseBigDecimal(transaction.sourceAmount);
-    return formatAmountToLocalizedNumeralsWithCurrency(amount, account?.currency ?? '');
+    const displayAmount = formatAmountToLocalizedNumeralsWithCurrency(amount, account?.currency ?? '');
+    return withTransactionAmountSign(displayAmount, transaction.type, !showAmountInHomePage.value || transaction.hideAmount);
 }
 
 function getSourceAccount(transaction: TransactionInfoResponse): Account | undefined {

@@ -1,10 +1,18 @@
 :root {
-    --ebk-amount-color-green: 0, 150, 136;
-    --ebk-amount-color-red: 212, 63, 63;
-    --ebk-amount-color-yellow: 226, 182, 10;
-    --ebk-amount-color-blue: 56, 115, 191;
-    --ebk-amount-color-black: 65, 57, 53;
-    --ebk-amount-color-white: 250, 240, 237;
+    --ebk-amount-color-green: 4, 120, 87;
+    --ebk-amount-color-red: 185, 28, 28;
+    --ebk-amount-color-yellow: 161, 98, 7;
+    --ebk-amount-color-blue: 29, 78, 216;
+    --ebk-amount-color-black: 31, 41, 55;
+    --ebk-amount-color-white: 230, 232, 235;
+}
+
+/* brighter variants keep amounts readable (4.5:1 or more) on dark surfaces */
+:root.dark {
+    --ebk-amount-color-green: 61, 220, 151;
+    --ebk-amount-color-red: 255, 107, 129;
+    --ebk-amount-color-yellow: 245, 196, 81;
+    --ebk-amount-color-blue: 76, 154, 255;
 }
 
 :root.expense-amount-color-green .text-expense {

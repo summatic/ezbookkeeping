@@ -254,7 +254,7 @@ export default defineConfig(() => {
                 },
                 output: {
                     assetFileNames: assetInfo => {
-                        const fileExt = assetInfo.names[0]?.split('.')[1];
+                        const fileExt = assetInfo.names[0]?.split('.').pop();
 
                         if (!fileExt) {
                             throw new Error('Invalid asset file name.');
