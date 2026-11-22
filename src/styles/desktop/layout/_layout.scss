@@ -1,8 +1,6 @@
 .layout-wrapper.layout-nav-type-vertical {
     min-height: calc(var(--vh, 1vh) * 100);
-    background:
-        radial-gradient(circle at 100% 0, rgba(var(--v-theme-primary), 0.055), transparent 24rem),
-        rgb(var(--v-theme-background));
+    background: rgb(var(--v-theme-background));
 }
 
 .layout-content-wrapper {
@@ -21,10 +19,8 @@
     display: flex;
     width: var(--ebk-sidebar-width);
     flex-direction: column;
-    border-inline-end: 1px solid rgba(var(--ebk-border), 0.09);
-    background:
-        linear-gradient(180deg, rgba(var(--v-theme-primary), 0.045), transparent 13rem),
-        rgba(var(--ebk-surface), 0.97);
+    border-inline-end: 1px solid rgba(var(--ebk-border), 0.12);
+    background: rgb(var(--ebk-surface));
     box-shadow: var(--ebk-shadow-sm);
     transition: transform var(--ebk-transition-base), box-shadow var(--ebk-transition-base);
 
@@ -105,7 +101,7 @@
         }
 
         > .router-link-exact-active {
-            background: linear-gradient(110deg, rgba(var(--v-theme-primary), 0.15), rgba(var(--v-theme-primary), 0.06));
+            background: rgba(var(--v-theme-primary), 0.1);
             color: rgb(var(--v-theme-primary));
 
             &::after {
@@ -114,7 +110,7 @@
             }
 
             &:hover {
-                background: linear-gradient(110deg, rgba(var(--v-theme-primary), 0.15), rgba(var(--v-theme-primary), 0.06));
+                background: rgba(var(--v-theme-primary), 0.12);
                 color: rgb(var(--v-theme-primary));
             }
         }
@@ -173,10 +169,8 @@
     position: relative;
     z-index: 1000;
     min-height: var(--ebk-navbar-height);
-    border-block-end: 1px solid rgba(var(--ebk-border), 0.08);
-    background:
-        linear-gradient(90deg, rgba(var(--v-theme-primary), 0.025), transparent 42%),
-        rgba(var(--ebk-surface), 0.86);
+    border-block-end: 1px solid rgba(var(--ebk-border), 0.12);
+    background: rgba(var(--ebk-surface), 0.92);
     box-shadow: 0 1px 8px rgba(var(--ebk-shadow-color), 0.035);
 
     &.navbar-blur {
@@ -217,7 +211,7 @@
 .layout-overlay {
     position: fixed;
     z-index: 1050;
-    background: rgba(20, 17, 15, 0.52);
+    background: rgba(11, 13, 16, 0.52);
     cursor: pointer;
     inset: 0;
     opacity: 0;

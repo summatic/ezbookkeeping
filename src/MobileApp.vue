@@ -47,7 +47,7 @@ const f7params = ref<Framework7Parameters>({
     name: 'ezBookkeeping',
     theme: 'ios',
     colors: {
-        primary: '#c67e48'
+        primary: '#1d4ed8'
     },
     routes: routes,
     darkMode: (() => {

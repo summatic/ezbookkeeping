@@ -216,7 +216,7 @@ const chartOptions = computed<object>(() => {
             max: outlierThreshold ?? heatMapData.value.maxValue.toDoubleNumber(),
             unboundedRange: !isNumber(outlierThreshold),
             inRange: {
-                color: isDarkMode.value ? [ '#1a1a1a', '#c67e48' ] : [ '#faf8f4', '#c67e48' ]
+                color: isDarkMode.value ? [ '#1a1d23', '#4c9aff' ] : [ '#f5f7fa', '#1d4ed8' ]
             },
             outOfRange: {
                 color: isDarkMode.value ? '#a0a0a0' : '#8f8f8f'
@@ -231,7 +231,7 @@ const chartOptions = computed<object>(() => {
             bottom: 10,
             cellSize: ['auto', 20],
             itemStyle: {
-                color: isDarkMode.value ? '#060504' : '#ffffff',
+                color: isDarkMode.value ? '#111318' : '#ffffff',
                 borderColor: isDarkMode.value ? '#4f4f4f' : '#e1e6f2'
             },
             splitLine: {

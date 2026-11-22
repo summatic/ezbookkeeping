@@ -696,6 +696,7 @@ init();
 
 .account-list .item-footer {
     padding-top: 4px;
+    line-height: 1.4;
 }
 
 .account-list-credit-card-amount-link {

@@ -1,5 +1,5 @@
 :root {
-    --v-font-body: Inter, sans-serif, -apple-system, blinkmacsystemfont, Segoe UI, roboto, Helvetica Neue, arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+    --v-font-body: 'Pretendard Variable', Pretendard, -apple-system, blinkmacsystemfont, Segoe UI, roboto, Helvetica Neue, arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
     --v-expand-panel-title-bg: rgba(var(--v-theme-on-surface), 0.04);
     --v-expand-panel-disabled-title-bg: rgba(var(--v-theme-on-surface), 0.02);
     --v-card-title-bg: rgba(var(--v-theme-on-surface), 0.04);
@@ -9,7 +9,7 @@
     --ebk-icon-font-size: 28px;
     --ebk-icon-default-color: #000;
 
-    --ebk-primary-color: 198, 126, 72;
+    --ebk-primary-color: 29, 78, 216;
     --ebk-sidebar-width: 16rem;
     --ebk-navbar-height: 4rem;
     --ebk-page-gutter: clamp(0.875rem, 0.6vw, 0.6rem);
@@ -30,12 +30,12 @@
     --ebk-transition-base: 200ms cubic-bezier(0.2, 0, 0, 1);
 
     --ebk-surface: 255, 255, 255;
-    --ebk-surface-muted: 248, 247, 245;
+    --ebk-surface-muted: 245, 247, 250;
     --ebk-surface-raised: 255, 255, 255;
-    --ebk-auth-background: 250, 248, 244;
+    --ebk-auth-background: 245, 247, 250;
     --ebk-code-background: 239, 239, 239;
-    --ebk-border: 54, 47, 42;
-    --ebk-shadow-color: 68, 48, 34;
+    --ebk-border: 31, 41, 55;
+    --ebk-shadow-color: 15, 23, 42;
     --ebk-shadow-sm: 0 1px 2px rgba(var(--ebk-shadow-color), 0.05), 0 3px 10px rgba(var(--ebk-shadow-color), 0.035);
     --ebk-shadow-md: 0 7px 24px rgba(var(--ebk-shadow-color), 0.1);
     --ebk-shadow-lg: 0 16px 44px rgba(var(--ebk-shadow-color), 0.16);
@@ -49,12 +49,13 @@
 
     --ebk-icon-default-color: #fff;
 
-    --ebk-surface: 28, 26, 24;
-    --ebk-surface-muted: 35, 32, 29;
-    --ebk-surface-raised: 39, 36, 33;
-    --ebk-auth-background: 32, 33, 34;
+    --ebk-primary-color: 76, 154, 255;
+    --ebk-surface: 26, 29, 35;
+    --ebk-surface-muted: 17, 19, 24;
+    --ebk-surface-raised: 35, 39, 47;
+    --ebk-auth-background: 17, 19, 24;
     --ebk-code-background: 33, 33, 33;
-    --ebk-border: 236, 226, 217;
+    --ebk-border: 230, 232, 235;
     --ebk-shadow-color: 0, 0, 0;
     --ebk-shadow-sm: 0 1px 2px rgba(var(--ebk-shadow-color), 0.18), 0 4px 14px rgba(var(--ebk-shadow-color), 0.14);
     --ebk-shadow-md: 0 9px 28px rgba(var(--ebk-shadow-color), 0.28);

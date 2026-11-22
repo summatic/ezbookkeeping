@@ -39,6 +39,7 @@
     "moment-timezone": "0.6.6",
     "monaco-editor": "0.57.0",
     "pinia": "4.1.0",
+    "pretendard": "1.3.9",
     "register-service-worker": "1.7.2",
     "skeleton-elements": "4.0.1",
     "swiper": "12.2.0",

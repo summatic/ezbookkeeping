@@ -43,6 +43,7 @@ import Framework7Vue, { registerComponents } from 'framework7-vue/bundle';
 
 import 'framework7-icons';
 import 'line-awesome/dist/line-awesome/css/line-awesome.css';
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 
 import { VueDatePicker } from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
